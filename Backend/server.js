@@ -16,7 +16,9 @@ import profileViewsRoutes from "./routes/profileViews.routes.js";
 import accountRoutes from "./routes/account.routes.js";
 import { startDeleteCron } from "./cron/deleteDeactivatedUsers.js";
 
-dotenv.config();
+dotenv.config({ path: "./.env" });
+console.log(process.env); // remove after debugging
+
 connectDB();
 
 const app = express();
@@ -41,6 +43,8 @@ app.use("/api", accountRoutes);
 // ✅ start cron only if file exists
 startDeleteCron();
 
-app.listen(5000, () => {
-  console.log("🚀 Server running on http://localhost:5000");
+app.listen(process.env.PORT || 5000, () => {
+  console.log(
+    `🚀 Server running on http://localhost:${process.env.PORT || 5000}`,
+  );
 });
