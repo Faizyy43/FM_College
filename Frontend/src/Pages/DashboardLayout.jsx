@@ -187,10 +187,10 @@ const DashboardLayout = () => {
             />
           )}
 
-          {selectedMenu === "Your Reviews" && <YourReviews />}
+          {/* {selectedMenu === "Your Reviews" && <YourReviews />}
           {selectedMenu === "Applied CAF" && <AppliedCAF />}
           {selectedMenu === "Pending Application" && <PendingApplications />}
-          {selectedMenu === "Account Settings" && <AccountSettings />}
+          {selectedMenu === "Account Settings" && <AccountSettings />} */}
           {selectedMenu === "Profile Views" && <ProfileViews />}
         </main>
       </div>

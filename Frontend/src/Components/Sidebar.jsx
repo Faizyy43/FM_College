@@ -22,10 +22,10 @@ const Sidebar = ({
   const menuItems = [
     { label: "Your Profile", icon: User },
     { label: "Applied Colleges", icon: GraduationCap },
-    { label: "Your Reviews", icon: Star },
-    { label: "Applied CAF", icon: CheckCircle },
-    { label: "Pending Application", icon: Clock },
-    { label: "Account Settings", icon: Settings },
+    // { label: "Your Reviews", icon: Star },
+    // { label: "Applied CAF", icon: CheckCircle },
+    // { label: "Pending Application", icon: Clock },
+    // { label: "Account Settings", icon: Settings },
     { label: "Profile Views", icon: Eye },
   ];
 

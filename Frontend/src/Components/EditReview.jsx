@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Star, X } from "lucide-react";
 
-const EditReviewModal = ({ review, onClose, onSuccess }) => {
+const EditReview = ({ review, onClose, onSuccess }) => {
   const [rating, setRating] = useState(review.rating);
   const [comment, setComment] = useState(review.comment);
   const [loading, setLoading] = useState(false);
@@ -66,4 +66,4 @@ const EditReviewModal = ({ review, onClose, onSuccess }) => {
   );
 };
 
-export default EditReviewModal;
+export default EditReview;
