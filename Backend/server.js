@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-
+import cors from "cors"; // or const cors = require("cors");
 import profileRoutes from "./routes/profile.routes.js";
 import applicationRoutes from "./routes/application.routes.js";
 import cafRoutes from "./routes/caf.routes.js";
@@ -25,6 +25,15 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // local dev
+      "https://fm-college.onrender.com", // production frontend
+    ],
+    credentials: true,
+  }),
+);
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api/profile", profileRoutes);

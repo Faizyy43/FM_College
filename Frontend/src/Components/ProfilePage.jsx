@@ -97,10 +97,12 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
     return Object.keys(e).length === 0;
   };
 
+  const API_BASE = "http://192.168.1.12:5000";
+
   const saveStep = async () => {
     // ================= STEP 1: BASIC DETAILS =================
     if (activeStep === 1) {
-      const res = await fetch("http://localhost:5000/api/profile/basic", {
+      const res = await fetch(`${API_BASE}/api/profile/basic`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -123,7 +125,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
 
     // ================= STEP 2: ADDRESS DETAILS =================
     if (activeStep === 2) {
-      await fetch("http://localhost:5000/api/profile/address", {
+      await fetch(`${API_BASE}/api/profile/address`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -136,7 +138,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
 
     // ================= STEP 3: EDUCATION DETAILS =================
     if (activeStep === 3) {
-      await fetch("http://localhost:5000/api/profile/education", {
+      await fetch(`${API_BASE}/api/profile/education`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -149,7 +151,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const submitProfile = async () => {
-    await fetch("http://localhost:5000/api/profile/consent", {
+    await fetch(`${API_BASE}/api/profile/consent`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -199,27 +201,44 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
         return;
       }
 
-      await uploadDocuments();
+      // don’t block UI
+      uploadDocuments().catch((err) => {
+        console.error("Upload failed:", err);
+      });
+
       setActiveStep(5);
       return;
     }
 
-    // FINAL STEP
+    // FINAL STEP → submit
     if (activeStep === 5) {
       if (!consentAccepted) {
         setConsentError("You must agree to the Terms & Conditions");
-        return; // 🚫 STOP SUBMIT
+        return;
       }
-
-      await submitProfile();
+      submitProfile().catch(console.error);
       setShowSuccess(true);
       return;
     }
 
+    // MOVE STEP IMMEDIATELY (UI FIRST)
+    setActiveStep((prev) => prev + 1);
+
+    // SAVE IN BACKGROUND (DON'T BLOCK UI)
+    saveStep().catch((err) => {
+      console.error("Save failed (ignored for UI):", err);
+    });
+
+    // VALIDATION
     if (!validateStep()) return;
 
-    await saveStep();
+    // MOVE STEP FIRST (IMPORTANT)
     setActiveStep((prev) => prev + 1);
+
+    // SAVE IN BACKGROUND
+    saveStep().catch((err) => {
+      console.error("Save step failed:", err);
+    });
   };
 
   const back = () => setActiveStep((s) => Math.max(s - 1, 1));
@@ -244,7 +263,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
     if (documents.photo) formData.append("photo", documents.photo);
 
     try {
-      const res = await fetch("http://localhost:5000/api/profile/documents", {
+      const res = await fetch(`${API_BASE}/api/profile/documents`, {
         method: "POST",
         body: formData,
       });
@@ -262,13 +281,33 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
     // 🚫 DO NOT load profile after logout
     if (isLoggedOut) return;
 
-    fetch("http://localhost:5000/api/profile/get", {
+    fetch("https://fm-college-backend.onrender.com/api/profile/get", {
       method: "POST",
     })
       .then((res) => res.json())
       .then((data) => {
         if (data && data.name) {
-          setForm(data);
+          setForm((prev) => ({
+            ...initialFormState,
+            ...prev,
+            ...data,
+            education: {
+              ...initialFormState.education,
+              ...(data.education || {}),
+              graduation: {
+                ...initialFormState.education.graduation,
+                ...(data.education?.graduation || {}),
+              },
+              class12: {
+                ...initialFormState.education.class12,
+                ...(data.education?.class12 || {}),
+              },
+              class10: {
+                ...initialFormState.education.class10,
+                ...(data.education?.class10 || {}),
+              },
+            },
+          }));
         }
       });
   }, [isLoggedOut]);
@@ -300,48 +339,48 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
       <div className="w-full max-w-6xl px-4 sm:px-6 space-y-8">
         {/* ================= STEPPER ================= */}
 
-       <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
-  <div className="relative">
-    {/* Background Line (Full) */}
-    <div className="absolute top-5 left-5 right-5 h-[3px] bg-gray-200 rounded-full" />
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
+          <div className="relative">
+            {/* Background Line (Full) */}
+            <div className="absolute top-5 left-5 right-5 h-0.75 bg-gray-200 rounded-full" />
 
-    {/* Progress Line (Filled) */}
-    <div
-      className="absolute top-5 left-5 h-[3px] bg-blue-600 rounded-full transition-all duration-300"
-      style={{
-        width:
-          STEPS.length <= 1
-            ? "0%"
-            : `${((activeStep - 1) / (STEPS.length - 1)) * 100}%`,
-      }}
-    />
-
-    {/* Steps */}
-    <div className="relative flex items-start w-full">
-      {STEPS.map((step) => {
-        const isActive = activeStep === step.id;
-        const isCompleted = activeStep > step.id;
-
-        return (
-          <div key={step.id} className="flex-1">
-            <button
-              onClick={() => {
-                setErrors({});
-                setActiveStep(step.id);
+            {/* Progress Line (Filled) */}
+            <div
+              className="absolute top-5 left-5 h-0.75 bg-blue-600 rounded-full transition-all duration-300"
+              style={{
+                width:
+                  STEPS.length <= 1
+                    ? "0%"
+                    : `${((activeStep - 1) / (STEPS.length - 1)) * 100}%`,
               }}
-              className="relative z-10 flex flex-col items-center w-full focus:outline-none group"
-            >
-              {/* Circle */}
-              <div
-                className={`
+            />
+
+            {/* Steps */}
+            <div className="relative flex items-start w-full">
+              {STEPS.map((step) => {
+                const isActive = activeStep === step.id;
+                const isCompleted = activeStep > step.id;
+
+                return (
+                  <div key={step.id} className="flex-1">
+                    <button
+                      onClick={() => {
+                        setErrors({});
+                        setActiveStep(step.id);
+                      }}
+                      className="relative z-10 flex flex-col items-center w-full focus:outline-none group"
+                    >
+                      {/* Circle */}
+                      <div
+                        className={`
                   w-10 h-10 rounded-full flex items-center justify-center
                   text-sm font-bold transition-all duration-200
                   ${
                     isCompleted
                       ? "bg-blue-500 text-white"
                       : isActive
-                      ? "bg-white text-blue-700"
-                      : "bg-white text-gray-500"
+                        ? "bg-white text-blue-700"
+                        : "bg-white text-gray-500"
                   }
                   ${
                     isActive
@@ -349,34 +388,33 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                       : "border border-gray-300"
                   }
                 `}
-              >
-                {isCompleted ? <Check size={18} /> : step.id}
-              </div>
+                      >
+                        {isCompleted ? <Check size={18} /> : step.id}
+                      </div>
 
-              {/* Label */}
-              <span
-                className={`
+                      {/* Label */}
+                      <span
+                        className={`
                   mt-2 text-[11px] sm:text-sm font-semibold text-center
                   transition
                   ${
                     isActive
                       ? "text-blue-700"
                       : isCompleted
-                      ? "text-gray-900"
-                      : "text-gray-500"
+                        ? "text-gray-900"
+                        : "text-gray-500"
                   }
                 `}
-              >
-                {step.label}
-              </span>
-            </button>
+                      >
+                        {step.label}
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        );
-      })}
-    </div>
-  </div>
-</div>
-
+        </div>
 
         {/* CARD */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 px-6 py-8 sm:px-10 sm:py-10">
@@ -491,7 +529,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                     /> */}
                     <Input
                       label="College Name"
-                      value={form.education.graduation.collegeName || ""}
+                      value={form.education?.graduation?.collegeName ?? ""}
                       onChange={(e) =>
                         setForm((prev) => ({
                           ...prev,
@@ -954,10 +992,11 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
             )}
 
             <button
+              type="button"
               onClick={next}
               className="px-10 py-3 rounded-lg bg-blue-600 text-white font-semibold"
             >
-              {activeStep === 5 ? "Save & Submit" : "Continue"}
+              Save & Submit
             </button>
           </div>
         </div>
@@ -1127,6 +1166,7 @@ function Input({ label, icon, error, className = "", ...props }) {
         <span className="text-blue-400  shrink-0">{icon}</span>
         <input
           {...props}
+          value={props.value ?? ""}
           className="w-full bg-transparent outline-none text-sm"
         />
       </div>
