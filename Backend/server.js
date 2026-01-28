@@ -28,10 +28,12 @@ app.use(express.json());
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://fm-college.onrender.com"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),
 );
+app.options("*", cors());
 app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
 
