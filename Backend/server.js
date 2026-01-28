@@ -27,13 +27,12 @@ app.use(cors());
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", // local dev
-      "https://fm-college.onrender.com", // production frontend
-    ],
+    origin: ["http://localhost:5173", "https://fm-college.onrender.com"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
 );
+app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api/profile", profileRoutes);
