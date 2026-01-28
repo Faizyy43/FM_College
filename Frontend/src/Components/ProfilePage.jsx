@@ -97,7 +97,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
     return Object.keys(e).length === 0;
   };
 
-  const API_BASE = "http://192.168.1.12:5000";
+  const API_BASE = import.meta.env.VITE_API_BASE;
 
   const saveStep = async () => {
     // ================= STEP 1: BASIC DETAILS =================
@@ -112,6 +112,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
           dateOfBirth: form.dateOfBirth,
           password: form.password,
         }),
+        credentials: "include",
       });
 
       await res.json();
@@ -194,51 +195,38 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   const next = async () => {
     console.log("NEXT CLICKED STEP =", activeStep);
 
-    // STEP 4 → upload documents
+    // ✅ VALIDATE FIRST
+    if (!validateStep()) return;
+
+    // ================= STEP 4 =================
     if (activeStep === 4) {
       if (!areRequiredDocsUploaded()) {
         setUploadMessage("❌ Please upload all required documents");
         return;
       }
 
-      // don’t block UI
-      uploadDocuments().catch((err) => {
-        console.error("Upload failed:", err);
-      });
-
+      uploadDocuments().catch(console.error);
       setActiveStep(5);
       return;
     }
 
-    // FINAL STEP → submit
+    // ================= STEP 5 =================
     if (activeStep === 5) {
       if (!consentAccepted) {
         setConsentError("You must agree to the Terms & Conditions");
         return;
       }
+
       submitProfile().catch(console.error);
       setShowSuccess(true);
       return;
     }
 
-    // MOVE STEP IMMEDIATELY (UI FIRST)
+    // ✅ SAVE CURRENT STEP (ONCE)
+    await saveStep();
+
+    // ✅ MOVE ONLY ONE STEP
     setActiveStep((prev) => prev + 1);
-
-    // SAVE IN BACKGROUND (DON'T BLOCK UI)
-    saveStep().catch((err) => {
-      console.error("Save failed (ignored for UI):", err);
-    });
-
-    // VALIDATION
-    if (!validateStep()) return;
-
-    // MOVE STEP FIRST (IMPORTANT)
-    setActiveStep((prev) => prev + 1);
-
-    // SAVE IN BACKGROUND
-    saveStep().catch((err) => {
-      console.error("Save step failed:", err);
-    });
   };
 
   const back = () => setActiveStep((s) => Math.max(s - 1, 1));
