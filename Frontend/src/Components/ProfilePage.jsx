@@ -266,13 +266,16 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   };
 
   useEffect(() => {
-    // 🚫 DO NOT load profile after logout
     if (isLoggedOut) return;
 
-    fetch("https://fm-college-backend.onrender.com/api/profile/get", {
-      method: "POST",
+    fetch(`${API_BASE}/api/profile/get`, {
+      method: "GET",
+      credentials: "include",
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        return res.json();
+      })
       .then((data) => {
         if (data && data.name) {
           setForm((prev) => ({
@@ -297,8 +300,9 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
             },
           }));
         }
-      });
-  }, [isLoggedOut]);
+      })
+      .catch(console.error);
+  }, [isLoggedOut, API_BASE]);
 
   const handleSameAs12th = (checked) => {
     setSameAs12th(checked);

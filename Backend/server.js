@@ -26,7 +26,21 @@ const app = express();
 ======================= */
 app.use(
   cors({
-    origin: true, // 👈 ALLOW ALL ORIGINS TEMPORARILY
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "https://fm-college.onrender.com",
+      ];
+
+      // allow server-to-server / render health checks
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
