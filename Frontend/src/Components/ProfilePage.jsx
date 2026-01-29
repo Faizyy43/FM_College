@@ -104,7 +104,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
     if (activeStep === 1) {
       const res = await fetch(`${API_BASE}/api/profile/basic`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
           email: form.email,

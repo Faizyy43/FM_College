@@ -26,15 +26,13 @@ const app = express();
 ======================= */
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://fm-college.onrender.com"],
+    origin: true, // 👈 ALLOW ALL ORIGINS TEMPORARILY
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
 
-// ✅ MUST be before routes
-app.options("*", cors());
+app.options("/*", cors());
+
 
 /* =======================
    Middleware
