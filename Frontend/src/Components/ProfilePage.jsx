@@ -98,10 +98,23 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   };
 
   const API_BASE = import.meta.env.VITE_API_URL;
+  async function fetchWithRetry(url, options, retries = 3) {
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) throw new Error("Request failed");
+      return res;
+    } catch (err) {
+      if (retries > 0) {
+        await new Promise((r) => setTimeout(r, 2000));
+        return fetchWithRetry(url, options, retries - 1);
+      }
+      throw err;
+    }
+  }
 
   const saveStep = async () => {
     if (activeStep === 1) {
-      const res = await fetch(`${API_BASE}/api/profile/basic`, {
+      const res = await fetchWithRetry(`${API_BASE}/api/profile/basic`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -114,7 +127,11 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error("STEP 1 FAILED");
+      if (!res.ok) {
+        alert("Server waking up, please try again in a few seconds.");
+        throw new Error("STEP 1 FAILED");
+      }
+
       await res.json();
 
       setProfileData({
@@ -125,7 +142,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
 
     // ================= STEP 2: ADDRESS DETAILS =================
     if (activeStep === 2) {
-      const res = await fetch(`${API_BASE}/api/profile/address`, {
+      const res = await fetchWithRetry(`${API_BASE}/api/profile/address`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -140,7 +157,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
 
     // ================= STEP 3: EDUCATION DETAILS =================
     if (activeStep === 3) {
-      const res = await fetch(`${API_BASE}/api/profile/education`, {
+      const res = await fetchWithRetry(`${API_BASE}/api/profile/education`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -155,7 +172,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const submitProfile = async () => {
-    await fetch(`${API_BASE}/api/profile/consent`, {
+    await fetchWithRetry(`${API_BASE}/api/profile/consent`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -254,7 +271,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
     if (documents.photo) formData.append("photo", documents.photo);
 
     try {
-      const res = await fetch(`${API_BASE}/api/profile/documents`, {
+      const res = await fetchWithRetry(`${API_BASE}/api/profile/documents`, {
         method: "POST",
         body: formData,
       });
@@ -271,7 +288,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   useEffect(() => {
     if (isLoggedOut) return;
 
-    fetch(`${API_BASE}/api/profile/get`, {
+    fetchWithRetry(`${API_BASE}/api/profile/get`, {
       method: "GET",
       credentials: "include",
     })
