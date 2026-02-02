@@ -416,7 +416,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
           {activeStep === 1 && (
             <Section
               title="Personal Information"
-              subtitle="Enter your basic details to create your account"
+              // subtitle="Enter your basic details to create your account"
             >
               <Grid>
                 <Input
@@ -457,7 +457,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                   onChange={(e) => update("dateOfBirth", e.target.value)}
                 />
 
-                <Input
+                {/* <Input
                   label="Password"
                   type="password"
                   icon={<Lock />}
@@ -466,14 +466,26 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                   className="md:col-span-2"
                   placeholder="Minimum 8 characters"
                   onChange={(e) => update("password", e.target.value)}
-                />
+                /> */}
               </Grid>
             </Section>
           )}
 
           {activeStep === 2 && (
-            <Section title="Address Details">
+            <Section
+              title="Address Details"
+              // subtitle="Provide your current residential address information"
+            >
               <Grid>
+                <Textarea
+                  label="Full Address"
+                  placeholder="House No, Street, Area, Landmark..."
+                  value={form.address}
+                  error={errors.address}
+                  className="md:col-span-2"
+                  onChange={(e) => update("address", e.target.value)}
+                />
+
                 <Input
                   label="City"
                   icon={<MapPin />}
@@ -496,7 +508,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                   label="Pincode"
                   icon={<MapPin />}
                   value={form.pincode}
-                  placeholder="Enter pincode"
+                  placeholder="Enter 6 digit pincode"
                   error={errors.pincode}
                   maxLength={6}
                   onChange={(e) => {
@@ -509,22 +521,23 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
           )}
 
           {activeStep === 3 && (
-            <Section title="Education Details">
-              <div className="space-y-6">
+            <Section
+              title="Education Details"
+              // subtitle="Provide your academic background information"
+            >
+              <div className="space-y-8">
                 {/* ================= GRADUATION ================= */}
-                <div className="border border-gray-200 rounded-lg shadow-sm p-6">
-                  <h3 className="text-base font-semibold text-gray-800 mb-4">
+                <div className="border border-gray-200 rounded-xl shadow-sm p-6 bg-gray-50/40">
+                  <h3 className="text-base font-semibold text-gray-800 mb-5">
                     Graduation Details
                   </h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {/* <Input
-                      label="College / University Name"
-                      placeholder="Enter college or university name"
-                    /> */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Input
                       label="College Name"
+                      icon={<GraduationCap />}
                       value={form.education?.graduation?.collegeName ?? ""}
+                      placeholder="Enter college or university"
                       onChange={(e) =>
                         setForm((prev) => ({
                           ...prev,
@@ -539,14 +552,11 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                       }
                     />
 
-                    {/* <Input
-                      label="Degree / Course"
-                      placeholder="B.Tech / B.Sc / B.Com etc."
-                    /> */}
-
                     <Input
-                      label="Course"
+                      label="Course / Degree"
+                      icon={<GraduationCap />}
                       value={form.education.graduation.course || ""}
+                      placeholder="B.Tech / B.Sc / B.Com etc."
                       onChange={(e) =>
                         setForm((prev) => ({
                           ...prev,
@@ -561,9 +571,10 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                       }
                     />
 
-                    {/* <Input label="Passing Year" placeholder="YYYY" /> */}
                     <Input
                       label="Passing Year"
+                      icon={<Calendar />}
+                      placeholder="YYYY"
                       value={form.education.graduation.passingYear}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -579,12 +590,10 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                       }
                     />
 
-                    {/* <Input
-                      label="Grading System"
-                      placeholder="Percentage / CGPA"
-                    /> */}
                     <Input
                       label="Grading System"
+                      icon={<ClipboardCheck />}
+                      placeholder="Percentage / CGPA"
                       value={form.education.graduation.gradingSystem || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -600,9 +609,11 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                       }
                     />
 
-                    {/* <Input label="Final Marks" placeholder="Enter marks" /> */}
                     <Input
-                      label="Final Marks"
+                      label="Final Marks / CGPA"
+                      icon={<ClipboardCheck />}
+                      placeholder="Enter marks"
+                      className="md:col-span-2"
                       value={form.education.graduation.marks || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -621,19 +632,15 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                 </div>
 
                 {/* ================= 12TH ================= */}
-                <div className="border border-gray-200 rounded-lg shadow-sm p-6">
-                  <h3 className="text-base font-semibold text-gray-800 mb-4">
+                <div className="border border-gray-200 rounded-xl shadow-sm p-6 bg-gray-50/40">
+                  <h3 className="text-base font-semibold text-gray-800 mb-5">
                     12th Standard Details
                   </h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {/* <Input
-                      label="School Name"
-                      placeholder="Enter school name"
-                    /> */}
-
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Input
                       label="School Name"
+                      icon={<GraduationCap />}
                       value={form.education.class12.schoolName || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -649,20 +656,9 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                       }
                     />
 
-                    {/* <Input label="Board" placeholder="CBSE / GSEB / ISC" />
-
-                    <Input
-                      label="Stream"
-                      placeholder="Science / Commerce / Arts"
-                    />
-
-                    <Input label="Passing Year" placeholder="YYYY" />
-
-                    <Input label="Marks Type" placeholder="Percentage / CGPA" />
-
-                    <Input label="Marks Obtained" placeholder="Enter marks" /> */}
                     <Input
                       label="Board"
+                      icon={<ClipboardCheck />}
                       value={form.education.class12.board || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -678,25 +674,46 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                       }
                     />
 
-                    <Input
-                      label="Stream"
-                      value={form.education.class12.stream || ""}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          education: {
-                            ...prev.education,
-                            class12: {
-                              ...prev.education.class12,
-                              stream: e.target.value,
-                            },
-                          },
-                        }))
-                      }
-                    />
+                    {/* Stream Dropdown */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs sm:text-sm font-medium text-gray-600">
+                        Stream
+                      </label>
+
+                      <div className="flex items-center gap-3 rounded-xl px-4 py-3 border border-gray-200 bg-gray-50">
+                        <GraduationCap
+                          className="text-blue-400 shrink-0"
+                          size={18}
+                        />
+
+                        <select
+                          value={form.education.class12.stream || ""}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              education: {
+                                ...prev.education,
+                                class12: {
+                                  ...prev.education.class12,
+                                  stream: e.target.value,
+                                },
+                              },
+                            }))
+                          }
+                          className="w-full bg-transparent outline-none text-sm"
+                        >
+                          <option value="">Select Stream</option>
+                          <option>Science</option>
+                          <option>Commerce</option>
+                          <option>Arts</option>
+                        </select>
+                      </div>
+                    </div>
 
                     <Input
                       label="Passing Year"
+                      icon={<Calendar />}
+                      placeholder="YYYY"
                       value={form.education.class12.passingYear || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -715,19 +732,15 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                 </div>
 
                 {/* ================= 10TH ================= */}
-                <div className="border border-gray-200 rounded-lg shadow-sm p-6">
-                  <h3 className="text-base font-semibold text-gray-800 mb-4">
+                <div className="border border-gray-200 rounded-xl shadow-sm p-6 bg-gray-50/40">
+                  <h3 className="text-base font-semibold text-gray-800 mb-5">
                     10th Standard Details
                   </h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {/* <Input
-                      label="School Name"
-                      placeholder="Enter school name"
-                    /> */}
-
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Input
                       label="School Name"
+                      icon={<GraduationCap />}
                       value={form.education.class10.schoolName || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -743,16 +756,9 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                       }
                     />
 
-                    {/* <Input label="Board" placeholder="CBSE / GSEB / ICSE" />
-
-                    <Input label="Passing Year" placeholder="YYYY" />
-
-                    <Input label="Marks Type" placeholder="Percentage / CGPA" />
-
-                    <Input label="Marks Obtained" placeholder="Enter marks" /> */}
-
                     <Input
                       label="Board"
+                      icon={<ClipboardCheck />}
                       value={form.education.class10.board || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -770,6 +776,8 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
 
                     <Input
                       label="Passing Year"
+                      icon={<Calendar />}
+                      placeholder="YYYY"
                       value={form.education.class10.passingYear || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -786,8 +794,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
                     />
                   </div>
 
-                  {/* SAME AS 12TH */}
-                  <div className="mt-4">
+                  <div className="mt-5">
                     <label className="flex items-center gap-2 text-sm text-gray-600">
                       <input
                         type="checkbox"
@@ -804,79 +811,93 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
           )}
 
           {activeStep === 4 && (
-            <Section title="Upload Documents">
-              <Grid>
+            <Section
+              title="Upload Documents"
+              // subtitle="Upload all required academic and identity documents"
+            >
+              <div className="space-y-6">
+                {/* Upload Progress */}
                 {uploading && (
-                  <div className="mt-4">
+                  <div className="rounded-lg bg-gray-50 border border-gray-200 p-4">
                     <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div className="h-full bg-blue-600 animate-pulse w-full"></div>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Uploading documents...
+                    <p className="text-xs text-gray-500 mt-2">
+                      Uploading documents, please wait...
                     </p>
                   </div>
                 )}
 
-                {/* 10th Marksheet */}
-                <UploadBox
-                  label="10th Marksheet"
-                  accept=".pdf,image/*"
-                  file={documents.tenthMarksheet}
-                  status={uploadStatus.tenthMarksheet}
-                  onChange={(file) => {
-                    if (!validateFile(file)) return;
-                    setDocuments((prev) => ({ ...prev, tenthMarksheet: file }));
-                  }}
-                />
-
-                {/* 12th Marksheet */}
-                <UploadBox
-                  label="12th Marksheet"
-                  accept=".pdf,image/*"
-                  file={documents.twelfthMarksheet}
-                  status={uploadStatus.twelfthMarksheet}
-                  onChange={(file) => {
-                    if (!validateFile(file)) return;
-                    setDocuments((prev) => ({
-                      ...prev,
-                      twelfthMarksheet: file,
-                    }));
-                  }}
-                />
-
-                {/* Aadhaar */}
-                <UploadBox
-                  label="Aadhaar / ID Proof"
-                  accept=".pdf,image/*"
-                  file={documents.aadhaar}
-                  status={uploadStatus.aadhaar}
-                  onChange={(file) => {
-                    if (!validateFile(file)) return;
-                    setDocuments((prev) => ({ ...prev, aadhaar: file }));
-                  }}
-                />
-
-                {/* Photo */}
-                <UploadBox
-                  label="Passport Size Photo"
-                  accept="image/*"
-                  file={documents.photo}
-                  status={uploadStatus.photo}
-                  onChange={(file) => {
-                    if (!validateFile(file)) return;
-
-                    setDocuments((prev) => ({ ...prev, photo: file }));
-                    setPhotoPreview(URL.createObjectURL(file));
-                  }}
-                />
-                {photoPreview && (
-                  <img
-                    src={photoPreview}
-                    alt="Preview"
-                    className="mt-3 w-20 h-20 rounded-full object-cover border"
+                {/* Upload Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <UploadBox
+                    label="10th Marksheet"
+                    accept=".pdf,image/*"
+                    file={documents.tenthMarksheet}
+                    status={uploadStatus.tenthMarksheet}
+                    onChange={(file) => {
+                      if (!validateFile(file)) return;
+                      setDocuments((prev) => ({
+                        ...prev,
+                        tenthMarksheet: file,
+                      }));
+                    }}
                   />
-                )}
-              </Grid>
+
+                  <UploadBox
+                    label="12th Marksheet"
+                    accept=".pdf,image/*"
+                    file={documents.twelfthMarksheet}
+                    status={uploadStatus.twelfthMarksheet}
+                    onChange={(file) => {
+                      if (!validateFile(file)) return;
+                      setDocuments((prev) => ({
+                        ...prev,
+                        twelfthMarksheet: file,
+                      }));
+                    }}
+                  />
+
+                  <UploadBox
+                    label="Aadhaar / ID Proof"
+                    accept=".pdf,image/*"
+                    file={documents.aadhaar}
+                    status={uploadStatus.aadhaar}
+                    onChange={(file) => {
+                      if (!validateFile(file)) return;
+                      setDocuments((prev) => ({ ...prev, aadhaar: file }));
+                    }}
+                  />
+
+                  <div className="space-y-2">
+                    <UploadBox
+                      label="Passport Size Photo"
+                      accept="image/*"
+                      file={documents.photo}
+                      status={uploadStatus.photo}
+                      onChange={(file) => {
+                        if (!validateFile(file)) return;
+
+                        setDocuments((prev) => ({ ...prev, photo: file }));
+                        setPhotoPreview(URL.createObjectURL(file));
+                      }}
+                    />
+
+                    {photoPreview && (
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={photoPreview}
+                          alt="Preview"
+                          className="w-20 h-20 rounded-full object-cover border border-gray-300 shadow-sm"
+                        />
+                        <span className="text-xs text-gray-500">
+                          Photo Preview
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </Section>
           )}
 
@@ -1174,43 +1195,28 @@ function Input({ label, icon, error, className = "", ...props }) {
   );
 }
 
-// function Textarea({ label, error, className = "", ...props }) {
-//   return (
-//     <div className={`space-y-1.5 ${className}`}>
-//       <label className="text-xs sm:text-sm font-medium text-gray-600">
-//         {label}
-//       </label>
-//       <textarea
-//         {...props}
-//         rows={3}
-//         className={`w-full rounded-xl px-4 py-3 text-sm outline-none
-//         ${error ? "border-red-500 bg-red-50" : "border-gray-200 bg-gray-50"}`}
-//       />
-//       {error && <p className="text-xs text-red-600">{error}</p>}
-//     </div>
-//   );
-// }
+function Textarea({ label, error, className = "", ...props }) {
+  return (
+    <div className={`space-y-1.5 ${className}`}>
+      <label className="text-xs sm:text-sm font-medium text-gray-600">
+        {label}
+      </label>
 
-// function Select({ label, options, error, ...props }) {
-//   return (
-//     <div className="space-y-1.5 max-w-md">
-//       <label className="text-xs sm:text-sm font-medium text-gray-600">
-//         {label}
-//       </label>
-//       <select
-//         {...props}
-//         className={`w-full rounded-xl px-4 py-3 text-sm outline-none
-//         ${error ? "border-red-500 bg-red-50" : "border-gray-200 bg-gray-50"}`}
-//       >
-//         <option value="">Select</option>
-//         {options.map((o) => (
-//           <option key={o}>{o}</option>
-//         ))}
-//       </select>
-//       {error && <p className="text-xs text-red-600">{error}</p>}
-//     </div>
-//   );
-// }
+      <div
+        className={`rounded-xl px-4 py-3 border
+        ${error ? "border-red-500 bg-red-50" : "border-gray-200 bg-gray-50"}`}
+      >
+        <textarea
+          {...props}
+          rows={3}
+          className="w-full bg-transparent outline-none text-sm resize-none"
+        />
+      </div>
+
+      {error && <p className="text-xs text-red-600">{error}</p>}
+    </div>
+  );
+}
 
 function UploadBox({ label, accept, onChange, status, file }) {
   {

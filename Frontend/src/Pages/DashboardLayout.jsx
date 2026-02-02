@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { LogOut, Menu } from "lucide-react";
+
 import Sidebar from "../Components/Sidebar";
 import ProfilePage1 from "../Components/ProfilePage";
 import AppliedColleges from "../Components/AppliedColleges";
-import YourReviews from "../Components/YourReviews";
-import AppliedCAF from "../Components/AppliedCAF";
-import PendingApplications from "../Components/PendingApplications";
-import AccountSettings from "../Components/AccountSettings";
 import ProfileViews from "../Components/ProfileViews";
 import CollegeDetails from "../Components/CollegeDetails";
 
 const DashboardLayout = () => {
   const [selectedMenu, setSelectedMenu] = useState("Your Profile");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // 🔹 mobile
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileResetKey, setProfileResetKey] = useState(0);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
 
-  // 🔹 USER STATE (single source of truth)
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -26,36 +22,43 @@ const DashboardLayout = () => {
 
   const [profileImage, setProfileImage] = useState(null);
 
-  // 🔹 SAFE INITIALS
+  const API_BASE = import.meta.env.VITE_API_BASE;
+
+  /* ================= USER INITIALS ================= */
   const getInitials = (name = "") => {
     if (!name.trim()) return "?";
     const words = name.trim().split(/\s+/);
     return words.length === 1
       ? words[0][0].toUpperCase()
-      : words[0][0].toUpperCase() + words[words.length - 1][0].toUpperCase();
+      : words[0][0].toUpperCase() +
+          words[words.length - 1][0].toUpperCase();
   };
 
-  /* ================= LOAD PROFILE + IMAGE ON REFRESH ================= */
+  /* ================= LOAD PROFILE ================= */
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/profile/get", {
-          method: "POST",
+        const res = await fetch(`${API_BASE}/api/profile/get`, {
+          method: "GET",
+          credentials: "include",
         });
+
+        if (!res.ok) throw new Error("Failed to fetch profile");
 
         const data = await res.json();
 
-        if (data) {
-          // keep your old logic
-          if (data.name) {
-            setProfileData({
-              name: data.name || "",
-              email: data.email || "",
-            });
-          }
+        if (data?.name) {
+          setProfileData({
+            name: data.name || "",
+            email: data.email || "",
+          });
+        }
 
-          // ✅ IMPORTANT: load saved profileImage from MongoDB
-          setProfileImage(data?.profileImage || null);
+        // Ensure proper image path
+        if (data?.profileImage) {
+          setProfileImage(`${API_BASE}/${data.profileImage}`);
+        } else {
+          setProfileImage(null);
         }
       } catch (err) {
         console.log("Profile load error:", err);
@@ -63,40 +66,37 @@ const DashboardLayout = () => {
     };
 
     loadProfile();
-  }, []);
+  }, [API_BASE]);
 
-  /* ================= UPLOAD PROFILE IMAGE (SAVE IN DB) ================= */
+  /* ================= IMAGE UPLOAD ================= */
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      // optional: show instantly as preview (no harm)
+      // Local preview
       const previewUrl = URL.createObjectURL(file);
       setProfileImage(previewUrl);
 
       const formData = new FormData();
       formData.append("profileImage", file);
 
-      const res = await fetch(
-        "http://localhost:5000/api/profile/upload-image",
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      const res = await fetch(`${API_BASE}/api/profile/upload-image`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
 
       const data = await res.json();
 
       if (!res.ok) {
-        console.log("Upload failed:", data);
         alert(data?.message || "Image upload failed");
         return;
       }
 
-      // ✅ set image URL saved in MongoDB (this persists after refresh)
+      // Save uploaded image path
       if (data?.imageUrl) {
-        setProfileImage(data.imageUrl);
+        setProfileImage(`${API_BASE}/${data.imageUrl}`);
       }
     } catch (err) {
       console.log("Upload error:", err);
@@ -104,9 +104,9 @@ const DashboardLayout = () => {
     }
   };
 
-  // 🔹 LOGOUT HANDLER
+  /* ================= LOGOUT ================= */
   const handleLogout = () => {
-    setIsLoggedOut(true); // 🔥 important
+    setIsLoggedOut(true);
     setProfileData({ name: "", email: "" });
     setProfileImage(null);
     setProfileResetKey((prev) => prev + 1);
@@ -116,7 +116,8 @@ const DashboardLayout = () => {
 
   return (
     <div className="flex w-screen h-screen bg-white overflow-hidden">
-      {/* ================= MOBILE OVERLAY ================= */}
+
+      {/* MOBILE OVERLAY */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
@@ -124,7 +125,7 @@ const DashboardLayout = () => {
         />
       )}
 
-      {/* ================= SIDEBAR ================= */}
+      {/* SIDEBAR */}
       <div
         className={`fixed lg:static z-50 h-full transition-transform duration-300
         ${
@@ -135,19 +136,20 @@ const DashboardLayout = () => {
           profileData={profileData}
           profileImage={profileImage}
           getInitials={getInitials}
-          onImageUpload={handleImageUpload} // ✅ FIXED (save in MongoDB)
+          onImageUpload={handleImageUpload}
           selectedMenu={selectedMenu}
           setSelectedMenu={(menu) => {
             setSelectedMenu(menu);
-            setSidebarOpen(false); // close on mobile click
+            setSidebarOpen(false);
           }}
           onLogoutClick={() => setShowLogoutModal(true)}
         />
       </div>
 
-      {/* ================= MAIN AREA ================= */}
+      {/* MAIN AREA */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* TOP BAR (MOBILE) */}
+
+        {/* MOBILE HEADER */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b">
           <button onClick={() => setSidebarOpen(true)}>
             <Menu size={22} />
@@ -166,7 +168,7 @@ const DashboardLayout = () => {
             <ProfilePage1
               key={profileResetKey}
               resetKey={profileResetKey}
-              isLoggedOut={isLoggedOut} // 🔥 pass this
+              isLoggedOut={isLoggedOut}
               setProfileData={setProfileData}
             />
           )}
@@ -187,18 +189,15 @@ const DashboardLayout = () => {
             />
           )}
 
-          {/* {selectedMenu === "Your Reviews" && <YourReviews />}
-          {selectedMenu === "Applied CAF" && <AppliedCAF />}
-          {selectedMenu === "Pending Application" && <PendingApplications />}
-          {selectedMenu === "Account Settings" && <AccountSettings />} */}
           {selectedMenu === "Profile Views" && <ProfileViews />}
         </main>
       </div>
 
-      {/* ================= LOGOUT MODAL ================= */}
+      {/* LOGOUT MODAL */}
       {showLogoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8">
+
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
               <LogOut className="h-7 w-7 text-red-600" />
             </div>
@@ -226,6 +225,7 @@ const DashboardLayout = () => {
                 Yes, Logout
               </button>
             </div>
+
           </div>
         </div>
       )}

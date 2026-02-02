@@ -13,22 +13,27 @@ router.get("/:userId", async (req, res) => {
       return res.status(400).json({ message: "Invalid userId" });
     }
 
-    const views = await ProfileView.find({ userId }).sort({ viewedAt: -1 });
+    const objectId = new mongoose.Types.ObjectId(userId);
+
+    const views = await ProfileView.find({ userId: objectId })
+      .sort({ viewedAt: -1 })
+      .lean();
 
     const totalViews = views.length;
-    const lastViewed = views[0]?.viewedAt || null;
+    const lastViewed = views.length > 0 ? views[0].viewedAt : null;
 
     res.json({
       totalViews,
       lastViewed,
       viewers: views.map((v) => ({
         id: v._id,
-        name: v.viewerName,
-        source: v.source,
+        name: v.viewerName || "Unknown",
+        source: v.source || "Unknown",
         date: v.viewedAt,
       })),
     });
   } catch (err) {
+    console.error("Profile views fetch error:", err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -44,14 +49,15 @@ router.post("/:userId", async (req, res) => {
     }
 
     const created = await ProfileView.create({
-      userId,
-      viewerName,
-      source,
+      userId: new mongoose.Types.ObjectId(userId),
+      viewerName: viewerName || "Guest",
+      source: source || "Unknown",
       viewedAt: new Date(),
     });
 
     res.status(201).json(created);
   } catch (err) {
+    console.error("Profile view create error:", err);
     res.status(500).json({ message: err.message });
   }
 });

@@ -7,13 +7,14 @@ import profileRoutes from "./routes/profile.routes.js";
 import applicationRoutes from "./routes/application.routes.js";
 import appliedRoutes from "./routes/applied.routes.js";
 import accountRoutes from "./routes/account.routes.js";
+import profileViewsRoutes from "./routes/profileViews.routes.js";
 
 import { startDeleteCron } from "./cron/deleteDeactivatedUsers.js";
 
 /* =======================
    ENV + DATABASE
 ======================= */
-dotenv.config({ path: "./.env" });
+dotenv.config();
 connectDB();
 
 const app = express();
@@ -21,30 +22,18 @@ const app = express();
 /* =======================
    CORS CONFIG
 ======================= */
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://fm-college.onrender.com", // frontend URL
-];
-
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // allow Postman or server calls
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      console.log("❌ Blocked by CORS:", origin);
-      return callback(null, false);
-    },
+    origin: [
+      "http://localhost:5173",
+      "https://fm-college-cvv5.onrender.com",
+    ],
     credentials: true,
-  }),
+  })
 );
 
-// Handle preflight requests
-app.options("*", cors());
+/* Handle preflight requests safely */
+app.options(/.*/, cors());
 
 /* =======================
    MIDDLEWARE
@@ -52,7 +41,6 @@ app.options("*", cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static uploads folder
 app.use("/uploads", express.static("uploads"));
 
 /* =======================
@@ -62,6 +50,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/applied-colleges", appliedRoutes);
 app.use("/api", accountRoutes);
+app.use("/api/profile-views", profileViewsRoutes);
 
 /* =======================
    HEALTH CHECK
@@ -78,7 +67,7 @@ app.use((req, res) => {
 });
 
 /* =======================
-   CRON JOBS
+   CRON JOB
 ======================= */
 startDeleteCron();
 
