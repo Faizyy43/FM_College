@@ -100,11 +100,10 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   const API_BASE = import.meta.env.VITE_API_BASE;
 
   const saveStep = async () => {
-    // ================= STEP 1: BASIC DETAILS =================
     if (activeStep === 1) {
       const res = await fetch(`${API_BASE}/api/profile/basic`, {
         method: "POST",
-        // headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
           email: form.email,
@@ -115,9 +114,9 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
         credentials: "include",
       });
 
+      if (!res.ok) throw new Error("STEP 1 FAILED");
       await res.json();
 
-      // 🔥 update sidebar AFTER save
       setProfileData({
         name: form.name,
         email: form.email,
@@ -126,7 +125,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
 
     // ================= STEP 2: ADDRESS DETAILS =================
     if (activeStep === 2) {
-      await fetch(`${API_BASE}/api/profile/address`, {
+      const res = await fetch(`${API_BASE}/api/profile/address`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -135,17 +134,21 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
           pincode: form.pincode,
         }),
       });
+
+      if (!res.ok) throw new Error("STEP 2 FAILED");
     }
 
     // ================= STEP 3: EDUCATION DETAILS =================
     if (activeStep === 3) {
-      await fetch(`${API_BASE}/api/profile/education`, {
+      const res = await fetch(`${API_BASE}/api/profile/education`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          education: form.education, // 🔥 THIS WAS MISSING
+          education: form.education,
         }),
       });
+
+      if (!res.ok) throw new Error("STEP 3 FAILED");
     }
   };
 
@@ -193,40 +196,40 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   };
 
   const next = async () => {
-    console.log("NEXT CLICKED STEP =", activeStep);
-
-    // ✅ VALIDATE FIRST
     if (!validateStep()) return;
 
-    // ================= STEP 4 =================
-    if (activeStep === 4) {
-      if (!areRequiredDocsUploaded()) {
-        setUploadMessage("❌ Please upload all required documents");
+    try {
+      // ================= STEP 4: UPLOAD DOCUMENTS =================
+      if (activeStep === 4) {
+        if (!areRequiredDocsUploaded()) {
+          setUploadMessage("❌ Please upload all required documents");
+          return;
+        }
+
+        await uploadDocuments(); // wait for upload
+        setActiveStep(5);
         return;
       }
 
-      uploadDocuments().catch(console.error);
-      setActiveStep(5);
-      return;
-    }
+      // ================= STEP 5: CONSENT =================
+      if (activeStep === 5) {
+        if (!consentAccepted) {
+          setConsentError("You must agree to the Terms & Conditions");
+          return;
+        }
 
-    // ================= STEP 5 =================
-    if (activeStep === 5) {
-      if (!consentAccepted) {
-        setConsentError("You must agree to the Terms & Conditions");
+        await submitProfile();
+        setShowSuccess(true);
         return;
       }
 
-      submitProfile().catch(console.error);
-      setShowSuccess(true);
-      return;
+      // ================= STEP 1–3: SAVE & NEXT =================
+      await saveStep();
+      setActiveStep((prev) => prev + 1);
+    } catch (err) {
+      console.error(err);
+      alert("❌ Something went wrong. Please try again.");
     }
-
-    // ✅ SAVE CURRENT STEP (ONCE)
-    await saveStep();
-
-    // ✅ MOVE ONLY ONE STEP
-    setActiveStep((prev) => prev + 1);
   };
 
   const back = () => setActiveStep((s) => Math.max(s - 1, 1));
@@ -974,6 +977,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
           <div className="mt-10 flex justify-between items-center">
             {activeStep > 1 ? (
               <button
+                type="button"
                 onClick={back}
                 className="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
               >
@@ -986,9 +990,9 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
             <button
               type="button"
               onClick={next}
-              className="px-10 py-3 rounded-lg bg-blue-600 text-white font-semibold"
+              className="px-10 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
             >
-              Save & Submit
+              {activeStep === 5 ? "Save & Submit" : "Save & Submit"}
             </button>
           </div>
         </div>
@@ -1146,19 +1150,22 @@ function Grid({ children }) {
 }
 
 function Input({ label, icon, error, className = "", ...props }) {
+  const { onClick, ...rest } = props; // remove accidental string onClick
+
   return (
     <div className={`space-y-1.5 ${className}`}>
       <label className="text-xs sm:text-sm font-medium text-gray-600">
         {label}
       </label>
       <div
-        className={`flex items-center gap-3 rounded-xl px-4 py-3 border border-gray-200
+        className={`flex items-center gap-3 rounded-xl px-4 py-3 border
         ${error ? "border-red-500 bg-red-50" : "border-gray-200 bg-gray-50"}`}
       >
-        <span className="text-blue-400  shrink-0">{icon}</span>
+        <span className="text-blue-400 shrink-0">{icon}</span>
+
         <input
-          {...props}
-          value={props.value ?? ""}
+          {...rest}
+          value={rest.value ?? ""}
           className="w-full bg-transparent outline-none text-sm"
         />
       </div>
