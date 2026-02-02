@@ -22,14 +22,22 @@ const app = express();
 /* =======================
    CORS CONFIG
 ======================= */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://fm-college-app.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://fm-college-cvv5.onrender.com",
-    ],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-  })
+  }),
 );
 
 /* Handle preflight requests safely */
