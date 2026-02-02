@@ -30,8 +30,7 @@ const DashboardLayout = () => {
     const words = name.trim().split(/\s+/);
     return words.length === 1
       ? words[0][0].toUpperCase()
-      : words[0][0].toUpperCase() +
-          words[words.length - 1][0].toUpperCase();
+      : words[0][0].toUpperCase() + words[words.length - 1][0].toUpperCase();
   };
 
   /* ================= LOAD PROFILE ================= */
@@ -106,6 +105,8 @@ const DashboardLayout = () => {
 
   /* ================= LOGOUT ================= */
   const handleLogout = () => {
+    localStorage.setItem("loggedOut", "true"); // block reload profile
+
     setIsLoggedOut(true);
     setProfileData({ name: "", email: "" });
     setProfileImage(null);
@@ -116,7 +117,6 @@ const DashboardLayout = () => {
 
   return (
     <div className="flex w-screen h-screen bg-white overflow-hidden">
-
       {/* MOBILE OVERLAY */}
       {sidebarOpen && (
         <div
@@ -148,7 +148,6 @@ const DashboardLayout = () => {
 
       {/* MAIN AREA */}
       <div className="flex flex-1 flex-col overflow-hidden">
-
         {/* MOBILE HEADER */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b">
           <button onClick={() => setSidebarOpen(true)}>
@@ -197,7 +196,6 @@ const DashboardLayout = () => {
       {showLogoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8">
-
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
               <LogOut className="h-7 w-7 text-red-600" />
             </div>
@@ -225,7 +223,6 @@ const DashboardLayout = () => {
                 Yes, Logout
               </button>
             </div>
-
           </div>
         </div>
       )}

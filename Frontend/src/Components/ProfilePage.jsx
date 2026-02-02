@@ -286,43 +286,58 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   };
 
   useEffect(() => {
-    if (isLoggedOut) return;
+    if (localStorage.getItem("loggedOut") === "true") {
+      setForm(initialFormState);
+      return;
+    }
 
-    fetchWithRetry(`${API_BASE}/api/profile/get`, {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch profile");
-        return res.json();
-      })
-      .then((data) => {
-        if (data && data.name) {
-          setForm((prev) => ({
-            ...initialFormState,
-            ...prev,
-            ...data,
-            education: {
-              ...initialFormState.education,
-              ...(data.education || {}),
-              graduation: {
-                ...initialFormState.education.graduation,
-                ...(data.education?.graduation || {}),
-              },
-              class12: {
-                ...initialFormState.education.class12,
-                ...(data.education?.class12 || {}),
-              },
-              class10: {
-                ...initialFormState.education.class10,
-                ...(data.education?.class10 || {}),
-              },
-            },
-          }));
+    const loadProfile = async () => {
+      try {
+        const res = await fetchWithRetry(`${API_BASE}/api/profile/get`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!res || !res.ok) {
+          setForm(initialFormState);
+          return;
         }
-      })
-      .catch(console.error);
-  }, [isLoggedOut, API_BASE]);
+
+        const data = await res.json();
+
+        if (!data || !data.name) {
+          setForm(initialFormState);
+          return;
+        }
+
+        setForm((prev) => ({
+          ...initialFormState,
+          ...prev,
+          ...data,
+          education: {
+            ...initialFormState.education,
+            ...(data.education || {}),
+            graduation: {
+              ...initialFormState.education.graduation,
+              ...(data.education?.graduation || {}),
+            },
+            class12: {
+              ...initialFormState.education.class12,
+              ...(data.education?.class12 || {}),
+            },
+            class10: {
+              ...initialFormState.education.class10,
+              ...(data.education?.class10 || {}),
+            },
+          },
+        }));
+      } catch {
+        setForm(initialFormState);
+      }
+    };
+
+    loadProfile();
+  }, [API_BASE]);
 
   const handleSameAs12th = (checked) => {
     setSameAs12th(checked);
