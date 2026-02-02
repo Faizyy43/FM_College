@@ -271,7 +271,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   useEffect(() => {
     if (isLoggedOut) return;
 
-    fetch(`${API_BASE}/api/profile/get`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/profile/get`, {
       method: "GET",
       credentials: "include",
     })
