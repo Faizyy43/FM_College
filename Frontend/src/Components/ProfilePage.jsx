@@ -97,7 +97,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
     return Object.keys(e).length === 0;
   };
 
-  const API_BASE = import.meta.env.VITE_API_BASE;
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   const saveStep = async () => {
     if (activeStep === 1) {
@@ -271,7 +271,7 @@ export default function ProfilePage({ setProfileData, isLoggedOut }) {
   useEffect(() => {
     if (isLoggedOut) return;
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/profile/get`, {
+    fetch(`${API_BASE}/api/profile/get`, {
       method: "GET",
       credentials: "include",
     })
