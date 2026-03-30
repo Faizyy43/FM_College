@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* ===============================
+   Disable browser password reveal
+   (Chrome / Edge / IE)
+================================ */
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Chrome / Edge internal decoration */
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none;
+}
+
+/* ADMIN INDEX CODE  */
+
+/* ===== Slide In Animation ===== */
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.25s ease-out;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
