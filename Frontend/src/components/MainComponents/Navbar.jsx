@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react";
-import { NotificationContext } from "../../admin/context/NotificationContext.jsx";
 import {
   FiUser,
   FiHome,
@@ -90,11 +88,19 @@ const Navbar = ({ setSidebarOpen }) => {
       })),
     },
     {
-      title: "All Colleges",
+      title: "Colleges",
       items: CITY_LINKS.map((city) => ({
         key: city.key,
         name: city.name,
         to: `/colleges/${city.key}`,
+      })),
+    },
+    {
+      title: "Establishments",
+      items: CITY_LINKS.map((city) => ({
+        key: city.key,
+        name: city.name,
+        to: `/establishments/${city.key}`,
       })),
     },
   ];
@@ -109,14 +115,21 @@ const Navbar = ({ setSidebarOpen }) => {
 
   /* ================= ONLY SEARCH FIX ================= */
 
-  const handleSearchEnter = (e) => {
+  const handleSearchEnter = (e, type) => {
     if (e.key === "Enter") {
       const found = DISTRICTS_ALL.find(
         (d) => d.name.toLowerCase() === districtSearch.toLowerCase(),
       );
 
       if (found) {
-        navigate(`/colleges/${found.key}`);
+        if (type === "college") {
+          navigate(`/colleges/${found.key}`);
+        }
+
+        if (type === "establishment") {
+          navigate(`/establishments/${found.key}`);
+        }
+
         setDistrictSearch("");
         setMobileDropdownOpen(null);
         setMobileMenuOpen(false);
@@ -138,114 +151,43 @@ const Navbar = ({ setSidebarOpen }) => {
 
   const accountPath = role === "student" ? `/${role}/profile` : null;
 
-  // ADMIN CONTAIN
-
-  const context = useContext(NotificationContext) || {};
-
-  const {
-    notifications = [],
-    unreadCount = 0,
-    markAllAsRead = () => {},
-  } = context;
-
-  const [notifyOpen, setNotifyOpen] = useState(false);
-  const notifyRef = useRef(null);
-
-  const pathname = window?.location?.pathname || "";
-
-  const isDashboard =
-    pathname.includes("/admin") ||
-    pathname.includes("/agent") ||
-    pathname.includes("/admin/college") ||
-    pathname.includes("/establishment");
-    // pathname.includes("/student");
-
-  // const isStudentDashboard = pathname.includes("/student");
-  const isStudent = token && role === "student";
-  const isAdminDashboard = pathname.startsWith("/admin");
   /* =================================================== */
 
   return (
     <>
       {/* ------------------- DESKTOP NAVBAR ------------------- */}
-      <div className="w-full h-16 bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm flex items-center">
-        <div className="w-full flex items-center justify-between px-6">
-          {/* LEFT SIDE */}
-          <div className="flex items-center gap-4">
-            {/* Logo (hide in admin dashboard) */}
-            {!isAdminDashboard && (
-              <Link to="/" className="flex items-center gap-3">
-                <img
-                  src="/find_my_college_logo[1].png"
-                  alt="logo"
-                  className="h-9 w-auto object-contain"
-                />
-              </Link>
-            )}
-          </div>
+      <div className="hidden md:block w-full backdrop-blur-md bg-white/50 shadow-lg border border-gray-100/50 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2.5">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-3">
+            <img
+              src="/find_my_college_logo[1].png"
+              alt="logo"
+              className="w-50 h-12 object-contain"
+            />
+          </Link>
 
-          {/* RIGHT SIDE */}
-          <div className="flex items-center gap-5 ml-auto">
-            {/* STREAM + COLLEGE DROPDOWNS */}
-            {/* STREAM + COLLEGE DROPDOWNS */}
-            {isStudent &&
-              dropdowns.map((dropdown) => (
-                <div key={dropdown.title} className="relative group">
-                  <button className="relative hover:text-orange-500 transition">
-                    {dropdown.title}
-                    <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-amber-500 transition-all duration-300 group-hover:w-full"></span>
-                  </button>
+          {/* Desktop Menu */}
+          <div className="flex items-center gap-6">
+            {dropdowns.map((dropdown) => (
+              <div key={dropdown.title} className="relative group">
+                <button className="relative hover:text-orange-500 transition">
+                  {dropdown.title}
+                  <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-amber-500 transition-all duration-300 group-hover:w-full"></span>
+                </button>
 
-                  {/* Dropdown */}
-                  <div
-                    className={`absolute left-1/2 -translate-x-1/2 mt-3 w-56 max-w-[90vw] bg-white rounded-lg shadow-lg border border-gray-200
-        opacity-0 translate-y-2 invisible
-        group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible
-        transition-all duration-200 z-50
-        ${
-          closeDropdown
-            ? "hidden"
-            : "opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible"
-        }`}
-                  >
-                    {dropdown.title === "All Colleges" && (
-                      <div className="px-2 py-2">
-                        {dropdown.items.map((item) => (
-                          <Link
-                            key={item.key}
-                            to={item.to}
-                            onClick={handleLinkClick}
-                            className="block px-4 py-2 text-gray-600 bg-linear-to-bl hover:from-blue-700 hover:to-blue-900 hover:text-white transition rounded"
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-
-                        <input
-                          type="text"
-                          value={districtSearch}
-                          onChange={(e) => setDistrictSearch(e.target.value)}
-                          onKeyDown={handleSearchEnter}
-                          placeholder="Search other districts..."
-                          className="mt-2 h-10 w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-orange-400 focus:ring-1 focus:ring-orange-400"
-                        />
-
-                        {districtSearch &&
-                          filteredOtherDistricts.slice(0, 5).map((d) => (
-                            <Link
-                              key={d.key}
-                              to={`/colleges/${d.key}`}
-                              onClick={handleLinkClick}
-                              className="block px-4 py-2 mb-1 text-gray-600 bg-linear-to-bl hover:from-blue-700 hover:to-blue-900 hover:text-white transition rounded"
-                            >
-                              {d.name}
-                            </Link>
-                          ))}
-                      </div>
-                    )}
-
-                    {dropdown.title !== "All Colleges" &&
-                      dropdown.items.map((item) => (
+                <div
+                  className={`absolute left-0 mt-3 w-64 bg-white rounded-sm shadow-xl border border-gray-100 opacity-0 translate-y-3 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200
+                  ${
+                    closeDropdown
+                      ? "hidden"
+                      : "opacity-0 translate-y-3 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible"
+                  }`}
+                >
+                  {(dropdown.title === "Colleges" ||
+                    dropdown.title === "Establishments") && (
+                    <div className="px-2 py-2">
+                      {dropdown.items.map((item) => (
                         <Link
                           key={item.key}
                           to={item.to}
@@ -255,69 +197,56 @@ const Navbar = ({ setSidebarOpen }) => {
                           {item.name}
                         </Link>
                       ))}
-                  </div>
-                </div>
-              ))}
 
-            {/* ADMIN NOTIFICATION */}
-            {token && role === "admin" && (
-              <div className="relative" ref={notifyRef}>
-                <button
-                  onClick={async () => {
-                    const newState = !notifyOpen;
-                    setNotifyOpen(newState);
-
-                    if (newState && unreadCount > 0) {
-                      await markAllAsRead();
-                    }
-                  }}
-                  className="relative p-2 rounded-lg hover:bg-gray-100 transition"
-                >
-                  <Bell size={20} />
-
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      {unreadCount}
-                    </span>
+                      <input
+                        type="text"
+                        value={districtSearch}
+                        onChange={(e) => setDistrictSearch(e.target.value)}
+                        onKeyDown={(e) =>
+                          handleSearchEnter(
+                            e,
+                            dropdown.title === "Colleges"
+                              ? "college"
+                              : "establishment",
+                          )
+                        }
+                        placeholder="Search other districts..."
+                        className="mt-2 h-10 w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-orange-400 focus:ring-1 focus:ring-orange-400"
+                      />
+                      {districtSearch &&
+                        filteredOtherDistricts.slice(0, 5).map((d) => (
+                          <Link
+                            key={d.key}
+                            to={
+                              dropdown.title === "Colleges"
+                                ? `/colleges/${d.key}`
+                                : `/establishments/${d.key}`
+                            }
+                            onClick={handleLinkClick}
+                            className="block px-4 py-2 mb-1 text-gray-600 bg-linear-to-bl hover:from-blue-700 hover:to-blue-900 hover:text-white transition rounded"
+                          >
+                            {d.name}
+                          </Link>
+                        ))}
+                    </div>
                   )}
-                </button>
 
-                {notifyOpen && (
-                  <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-xl border border-gray-200 p-4 space-y-3 max-h-96 overflow-y-auto z-50">
-                    <h3 className="font-semibold text-gray-800">
-                      Notifications
-                    </h3>
-
-                    {notifications.length === 0 ? (
-                      <p className="text-sm text-gray-500">
-                        No new notifications
-                      </p>
-                    ) : (
-                      notifications.map((notif) => (
-                        <div
-                          key={notif._id}
-                          className={`p-3 rounded-lg ${
-                            notif.isRead
-                              ? "bg-gray-50"
-                              : "bg-blue-50 border border-blue-100"
-                          }`}
-                        >
-                          <p className="text-sm font-medium wrap-break-word">
-                            {notif.message}
-                          </p>
-
-                          <p className="text-xs text-gray-400 mt-1">
-                            {new Date(notif.createdAt).toLocaleString()}
-                          </p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
+                  {dropdown.title !== "Colleges" &&
+                    dropdown.title !== "Establishments" &&
+                    dropdown.items.map((item) => (
+                      <Link
+                        key={item.key}
+                        to={item.to}
+                        onClick={handleLinkClick}
+                        className="block px-4 py-2 text-gray-600 bg-linear-to-bl hover:from-blue-700 hover:to-blue-900 hover:text-white transition rounded"
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                </div>
               </div>
-            )}
+            ))}
 
-            {/* USER PROFILE */}
             <div
               className="relative"
               ref={menuRef}
@@ -336,25 +265,35 @@ const Navbar = ({ setSidebarOpen }) => {
               }}
             >
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setUserMenuOpen((prev) => !prev);
+                onClick={() => {
+                  if (isTouchDevice()) setUserMenuOpen((prev) => !prev);
                 }}
                 className="w-11 h-11 rounded-full bg-linear-to-br from-gray-500 to-gray-950
-    text-white text-lg font-semibold flex items-center justify-center"
+  text-white text-lg font-semibold tracking-wide
+  flex items-center justify-center
+  ring-2 ring-indigo-400/40 shadow-md
+  hover:ring-indigo-300 hover:scale-105 transition-transform duration-200"
               >
-                {token && role === "student" ? (
-                  getInitials(name)
-                ) : (
-                  <FiUser className="text-xl" />
-                )}
+                {token ? getInitials(name) : <FiUser className="text-xl" />}
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 z-999 overflow-hidden">
+                <div
+                  className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                  onMouseEnter={() => {
+                    if (!isTouchDevice()) clearTimeout(closeTimer.current);
+                  }}
+                  onMouseLeave={() => {
+                    if (!isTouchDevice()) {
+                      closeTimer.current = setTimeout(() => {
+                        setUserMenuOpen(false);
+                      }, 150);
+                    }
+                  }}
+                >
                   {/* USER HEADER */}
                   <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200 bg-linear-to-br from-gray-300 to-gray-100">
-                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-gray-500 to-gray-950 text-white flex items-center justify-center font-semibold">
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-gray-500 to-gray-950 text-white flex items-center justify-center font-semibold ">
                       {getInitials(name)}
                     </div>
 
@@ -433,8 +372,8 @@ const Navbar = ({ setSidebarOpen }) => {
                     <div className="border-t border-gray-200">
                       <button
                         onClick={() => {
-                          setUserMenuOpen(false);
-                          setShowLogout(true);
+                          setUserMenuOpen(false); // close dropdown
+                          setShowLogout(true); // open confirm modal
                         }}
                         className="w-full flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 transition"
                       >
@@ -452,7 +391,7 @@ const Navbar = ({ setSidebarOpen }) => {
 
       {/* ------------------- MOBILE NAVBAR ------------------- */}
       <div className="md:hidden w-full backdrop-blur-md bg-white/70 shadow-lg border-b border-gray-100/50 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 w-full">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2.5">
           {/* Hamburger on the left */}
           <button
             className="text-gray-800 text-2xl"
@@ -480,28 +419,13 @@ const Navbar = ({ setSidebarOpen }) => {
           <div className="relative">
             <button
               onClick={() => setUserMenuOpen((prev) => !prev)}
-              className="w-9 h-9 rounded-full bg-linear-to-br from-gray-500 to-gray-950
+              className="w-11 h-11 rounded-full bg-linear-to-br from-gray-500 to-gray-950
   text-white text-lg font-semibold tracking-wide
   flex items-center justify-center
   ring-2 ring-indigo-400/40 shadow-md"
             >
               {token ? getInitials(name) : <FiUser className="text-xl" />}
             </button>
-
-            <div className="relative">
-              <button
-                onClick={() => setNotifyOpen(!notifyOpen)}
-                className="relative p-2"
-              >
-                <Bell size={18} />
-
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-            </div>
 
             {userMenuOpen && (
               <div className="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-gray-200 z-50 overflow-hidden">
@@ -621,7 +545,7 @@ const Navbar = ({ setSidebarOpen }) => {
         {/* Mobile menu dropdown (collapsible) */}
         <div
           className={`md:hidden w-full bg-white/90 transition-max-height duration-300 overflow-hidden ${
-            mobileMenuOpen ? "max-h-125" : "max-h-0"
+            mobileMenuOpen ? "max-h-[500px]" : "max-h-0"
           }`}
         >
           <div className="flex flex-col gap-1 px-4 py-3 text-gray-700">
@@ -703,7 +627,7 @@ const Navbar = ({ setSidebarOpen }) => {
       {showLogout && (
         <div
           className="
-      fixed inset-0 z-100
+      fixed inset-0 z-[100]
       bg-black/50 backdrop-blur-md
       flex items-end sm:items-center justify-center
     "

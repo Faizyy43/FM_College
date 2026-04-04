@@ -4,28 +4,22 @@ import Gallery from "../models/college.gallery.model.js";
 
 export const getCollegeGallery = async (req, res) => {
   try {
-
     const collegeId = req.user.id;
 
     let gallery = await Gallery.findOne({ college: collegeId });
 
     if (!gallery) {
-
       gallery = await Gallery.create({
         college: collegeId,
         logo: "",
         banner: "",
         images: [],
       });
-
     }
 
     res.json(gallery);
-
   } catch (error) {
-
     res.status(500).json({ message: error.message });
-
   }
 };
 
@@ -33,7 +27,6 @@ export const getCollegeGallery = async (req, res) => {
 
 export const createOrUpdateCollegeGallery = async (req, res) => {
   try {
-
     const collegeId = req.user.id;
 
     const logo = req.files?.logo?.[0]?.filename;
@@ -45,16 +38,13 @@ export const createOrUpdateCollegeGallery = async (req, res) => {
     let gallery = await Gallery.findOne({ college: collegeId });
 
     if (!gallery) {
-
       gallery = await Gallery.create({
         college: collegeId,
         logo: logo ? "/uploads/" + logo : "",
         banner: banner ? "/uploads/" + banner : "",
         images,
       });
-
     } else {
-
       if (logo) gallery.logo = "/uploads/" + logo;
 
       if (banner) gallery.banner = "/uploads/" + banner;
@@ -64,15 +54,11 @@ export const createOrUpdateCollegeGallery = async (req, res) => {
       }
 
       await gallery.save();
-
     }
 
     res.json(gallery);
-
   } catch (error) {
-
     res.status(500).json({ message: error.message });
-
   }
 };
 
@@ -80,7 +66,6 @@ export const createOrUpdateCollegeGallery = async (req, res) => {
 
 export const deleteCollegeSingleImage = async (req, res) => {
   try {
-
     const { imageUrl } = req.body;
 
     const collegeId = req.user.id;
@@ -91,17 +76,12 @@ export const deleteCollegeSingleImage = async (req, res) => {
       return res.status(404).json({ message: "Gallery not found" });
     }
 
-    gallery.images = gallery.images.filter(
-      (img) => img !== imageUrl
-    );
+    gallery.images = gallery.images.filter((img) => img !== imageUrl);
 
     await gallery.save();
 
     res.json({ message: "Image deleted successfully" });
-
   } catch (error) {
-
     res.status(500).json({ message: error.message });
-
   }
 };

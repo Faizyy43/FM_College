@@ -3,14 +3,14 @@ import { NavLink, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 /* Tab Components */
-import EsAboutTab from "../components/EsPgComponents/EsAboutTab";
-import EsCourseTab from "../components/EsPgComponents/EsCourseTab";
-import EsProjectsTab from "../components/EsPgComponents/EsProjectsTab";
-import EsGalleryTab from "../components/EsPgComponents/EsGalleryTab";
-import EsContactTab from "../components/EsPgComponents/EsContactTab";
+import EsAboutTab from "../components/EsPgComponent/EsAboutTab";
+import EsCourseTab from "../components/EsPgComponent/EsCourseTab";
+import EsProjectsTab from "../components/EsPgComponent/EsProjectsTab";
+import EsGalleryTab from "../components/EsPgComponent/EsGalleryTab";
+import EsContactTab from "../components/EsPgComponent/EsContactTab";
 
-import EsBanner from "../components/EsPgComponents/EsBanner";
-import EstablishmentCTA from "../components/EsPgComponents/EstablishmentCTA";
+import EsBanner from "../components/EsPgComponent/EsBanner";
+import EstablishmentCTA from "../components/EsPgComponent/EstablishmentCTA";
 
 /* Tabs */
 const TABS = ["About Us", "Courses", "Projects", "Gallery", "Contact"];
@@ -26,7 +26,10 @@ const TAB_COMPONENTS = {
 
 /* Slugify helper */
 const slugify = (str = "") =>
-  str.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
+  str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-");
 
 const EstablishmentPage = () => {
   const { districtKey, slug, tabName } = useParams();
@@ -54,7 +57,7 @@ const EstablishmentPage = () => {
         setLoading(true);
 
         const res = await axios.get(
-          `http://localhost:5000/api/establishment/view/${districtKey}/${slug}`
+          `http://localhost:5000/api/establishment/view/${districtKey}/${slug}`,
         );
 
         setEstablishment(res.data);
@@ -71,9 +74,7 @@ const EstablishmentPage = () => {
 
   /* ================= ACTIVE TAB ================= */
 
-  const normalizedTab = tabName
-    ? tabName.replace(/-/g, " ").toLowerCase()
-    : "";
+  const normalizedTab = tabName ? tabName.replace(/-/g, " ").toLowerCase() : "";
 
   const activeTab =
     TABS.find((t) => t.toLowerCase() === normalizedTab) || TABS[0];
@@ -100,7 +101,6 @@ const EstablishmentPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
-
       {/* ================= BANNER ================= */}
 
       <EsBanner
@@ -113,13 +113,10 @@ const EstablishmentPage = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 -mt-10 sm:-mt-14">
-
         {/* ================= PROFILE CARD ================= */}
 
         <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-
           <div className="flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left">
-
             {establishment?.gallery?.logo && (
               <img
                 src={`http://localhost:5000${establishment.gallery.logo}`}
@@ -129,7 +126,6 @@ const EstablishmentPage = () => {
             )}
 
             <div className="flex-1 mt-4">
-
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                 {establishment.establishmentName}
               </h1>
@@ -137,11 +133,8 @@ const EstablishmentPage = () => {
               <p className="mt-2 text-gray-600 text-sm sm:text-base">
                 📍 {establishment?.address?.fullAddress}
               </p>
-
             </div>
-
           </div>
-
         </div>
 
         {/* ================= STUDENT CTA ================= */}
@@ -159,16 +152,12 @@ const EstablishmentPage = () => {
         {/* ================= TABS ================= */}
 
         <nav className="mt-8 border-b border-gray-200 overflow-x-auto">
-
           <ul className="flex gap-7 text-base font-semibold text-gray-700">
-
             {TABS.map((t) => {
-
               const tabSlug = slugify(t);
 
               return (
                 <li key={t}>
-
                   <NavLink
                     to={`/establishment/${districtKey}/${slug}/${tabSlug}`}
                     className={({ isActive }) =>
@@ -181,19 +170,15 @@ const EstablishmentPage = () => {
                   >
                     {t}
                   </NavLink>
-
                 </li>
               );
             })}
-
           </ul>
-
         </nav>
 
         {/* ================= TAB CONTENT ================= */}
 
         <div className="mt-6 bg-white rounded-xl shadow-md p-6 sm:p-7">
-
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900">
             {activeTab}
           </h2>
@@ -207,9 +192,7 @@ const EstablishmentPage = () => {
             contact={establishment.contact}
             about={establishment.about}
           />
-
         </div>
-
       </div>
 
       {/* ================= LOGIN POPUP ================= */}
@@ -219,12 +202,10 @@ const EstablishmentPage = () => {
           className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-md flex items-end sm:items-center justify-center"
           onClick={() => setShowAuthPopup(false)}
         >
-
           <div
             className="relative bg-white w-full sm:max-w-xl rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.35)]"
             onClick={(e) => e.stopPropagation()}
           >
-
             <button
               onClick={() => setShowAuthPopup(false)}
               className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-gray-200"
@@ -233,7 +214,6 @@ const EstablishmentPage = () => {
             </button>
 
             <div className="pt-3">
-
               <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">
                 Login Required
               </h3>
@@ -243,7 +223,6 @@ const EstablishmentPage = () => {
               </p>
 
               <div className="mt-8 flex flex-col-reverse sm:flex-row gap-4">
-
                 <button
                   onClick={() => setShowAuthPopup(false)}
                   className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200"
@@ -263,16 +242,11 @@ const EstablishmentPage = () => {
                 >
                   Login / Register
                 </button>
-
               </div>
-
             </div>
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 };

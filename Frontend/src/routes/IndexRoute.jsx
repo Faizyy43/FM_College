@@ -43,7 +43,6 @@ import AdminLayout from "../admin/layout/AdminLayout.jsx";
 import DashboardHome from "../admin/pages/DashboardHome";
 import StudentsPage from "../admin/module/Student/StudentsPage";
 import AgentsPage from "../admin/module/Agent/AgentsPage";
-import EstablishmentsPage from "../admin/module/Establishment/EstablishmentsPage";
 import Settings from "../admin/pages/Settings";
 import StudentDetails from "../admin/module/Student/StudentDetails";
 import AgentProfile from "../admin/module/Agent/AgentProfile";
@@ -51,12 +50,14 @@ import RequestsPage from "../admin/pages/requests/RequestsPage";
 import RequestDetailsPage from "../admin/pages/requests/RequestDetailsPage";
 import CollegesPage from "../admin/module/College/CollegesPage";
 import CollegeProfile from "../admin/module/College/CollegeProfile";
-import EstablishmentsProfile from "../admin/module/Establishment/EstablishmentsProfile";
+import EsDirectory from "../components/EsPgComponent/EsDirectory.jsx";
+import EstablishmentPage from "../pages/EstablishmentPage.jsx";
+import { EsApplicationForm } from "../components/EsPgComponent/EsApplicationForm.jsx";
 
 const IndexRoute = () => {
   return (
     <Routes>
-      {/* AUTH ROUTES */}
+      {/* ================= AUTH ROUTES ================= */}
       <Route element={<AuthLayout />}>
         <Route
           path="/login"
@@ -90,7 +91,7 @@ const IndexRoute = () => {
         <Route path="/apply/success" element={<RASuccess />} />
       </Route>
 
-      {/* MAIN WEBSITE */}
+      {/* ================= MAIN WEBSITE ================= */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/programs" element={<HomePage />} />
@@ -109,6 +110,20 @@ const IndexRoute = () => {
 
         <Route path="/colleges" element={<CollegeDirectory />} />
         <Route path="/colleges/:citySlug" element={<CollegeDirectory />} />
+
+        <Route path="/establishments" element={<EstablishmentApply />} />
+
+        <Route
+          path="/establishment/:districtKey/:slug"
+          element={<EstablishmentPage />}
+        />
+
+        <Route
+          path="/establishment/:districtKey/:slug/:tabName"
+          element={<EsApplicationForm />}
+        />
+
+        <Route path="/establishments/:districtKey" element={<EsDirectory />} />
 
         <Route element={<ProtectedRoute allowedRoles={["STUDENT"]} />}>
           <Route
@@ -155,47 +170,37 @@ const IndexRoute = () => {
         <Route path="/terms-and-conditions" element={<TermsPage />} />
       </Route>
 
-      {/* MODULE ROUTES */}
-      {EstablishmentRoutes()}
-      {CollegeRoutes()}
-      {StudentRoutes()}
-      {AgentRoutes()}
+      {/* ================= MODULE ROUTES FIX ================= */}
+      {/* 🔥 IMPORTANT FIX HERE */}
+      <Route path="/*">
+        {EstablishmentRoutes()}
+        {CollegeRoutes()}
+        {StudentRoutes()}
+        {AgentRoutes()}
+      </Route>
 
-      {/* ADMIN DASHBOARD */}
+      {/* ================= ADMIN DASHBOARD ================= */}
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
         <Route path="/admin" element={<AdminLayout />}>
-          {/* Dashboard */}
           <Route path="dashboard" element={<DashboardHome />} />
 
-          {/* Agents */}
           <Route path="agents" element={<AgentsPage />} />
           <Route path="agents/:id" element={<AgentProfile />} />
 
-          {/* Establishments */}
-          <Route path="establishments" element={<EstablishmentsPage />} />
-          <Route
-            path="establishments/:id"
-            element={<EstablishmentsProfile />}
-          />
-
-          {/* Students */}
           <Route path="students" element={<StudentsPage />} />
           <Route path="students/:id" element={<StudentDetails />} />
 
-          {/* Colleges */}
           <Route path="colleges" element={<CollegesPage />} />
           <Route path="colleges/:id" element={<CollegeProfile />} />
 
-          {/* Requests */}
           <Route path="requests" element={<RequestsPage />} />
           <Route path="requests/:id" element={<RequestDetailsPage />} />
 
-          {/* Settings */}
           <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
 
-      {/* 404 */}
+      {/* ================= 404 ================= */}
       <Route path="*" element={<Page404 />} />
     </Routes>
   );

@@ -8,13 +8,14 @@ import StuApplicationDetails from "../pages/StuApplicationDetails";
 const StudentRoutes = () => {
   return (
     <Route element={<ProtectedRoute allowedRoles={["STUDENT"]} />}>
-      <Route path="/student/profile" element={<StuProfile />} />
+      {/* 🔥 FIX: removed "/" */}
+
+      <Route path="student/profile" element={<StuProfile />} />
+
+      <Route path="student/applied-colleges" element={<StuAppliedColleges />} />
+
       <Route
-        path="/student/applied-colleges"
-        element={<StuAppliedColleges />}
-      />
-      <Route
-        path="/student/application/:id"
+        path="student/application/:id"
         element={<StuApplicationDetails />}
       />
     </Route>
