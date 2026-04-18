@@ -15,5 +15,3 @@ A web application for managing college activities and student information.
 - **Backend:** Node.js / Express (if applicable)
 - **Database:** MongoDB / MySQL (if applicable)
 - **Version Control:** Git & GitHub
-
-# FM_College
