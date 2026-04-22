@@ -49,7 +49,11 @@ const mobileRegex = /^[0-9]{10}$/;
 export default function EsProfile() {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
-  const [popup, setPopup] = useState({ open: false, type: "success", message: "" });
+  const [popup, setPopup] = useState({
+    open: false,
+    type: "success",
+    message: "",
+  });
 
   const [form, setForm] = useState({
     establishmentName: "",
@@ -172,7 +176,8 @@ export default function EsProfile() {
       if (!form.gst) e.gst = "GST certificate required";
       if (!form.pan) e.pan = "PAN card required";
       if (!form.addressProof) e.addressProof = "Address proof required";
-      if (!form.registrationCert) e.registrationCert = "Registration certificate required";
+      if (!form.registrationCert)
+        e.registrationCert = "Registration certificate required";
       if (!form.ownerPhoto) e.ownerPhoto = "Owner photo required";
       if (!form.companyLogo) e.companyLogo = "Company logo required";
     }
@@ -268,7 +273,7 @@ export default function EsProfile() {
       </p>
 
       {/* ------------------ EXISTING UI BELOW (UNCHANGED) ------------------ */}
-     
+
       {/* STEP 1 */}
       {step === 1 && (
         <Section
@@ -802,7 +807,7 @@ const Stepper = ({ current }) => (
     })}
   </div>
 );
- 
+
 /* ================= FUSION ACCORDION ================= */
 
 const Accordion = ({ title, checked, onCheck, children }) => {

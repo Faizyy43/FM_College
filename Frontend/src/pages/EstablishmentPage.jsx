@@ -234,7 +234,7 @@ const EstablishmentPage = () => {
                   onClick={() =>
                     navigate("/login", {
                       state: {
-                        redirectTo: `/establishments/${districtKey}/${slug}/apply`,
+                        redirectTo: `/establishment/${districtKey}/${slug}/apply`,
                       },
                     })
                   }

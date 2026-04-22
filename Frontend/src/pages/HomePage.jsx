@@ -19,7 +19,7 @@ const HomePage = () => {
        <ProgramSection/>     
        <Admissions/> 
        <StudybyDistrict/>
-       <TopCourses/>
+       {/* <TopCourses/> */}
      
  
 

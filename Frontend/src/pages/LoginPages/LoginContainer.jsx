@@ -57,8 +57,9 @@ const LoginContainer = () => {
       }
 
       const { token, role, name } = res.data;
+      const normalizedRole = role?.toUpperCase();
       localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
+      localStorage.setItem("role", normalizedRole);
       localStorage.setItem("name", name);
 
       toast.success("Login successful!", {
@@ -68,10 +69,10 @@ const LoginContainer = () => {
 
       // Delay navigation so user sees toast
       setTimeout(() => {
-        if(role === "STUDENT") {
-          navigate("/");
+        if (role === "STUDENT") {
+          navigate("/student/dashboard");
         } else {
-          navigate(`/${role.toLowerCase()}/dashboard`)
+          navigate(`/${role.toLowerCase()}/dashboard`);
         }
       }, 1500);
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useParams, useNavigate } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import axios from "axios";
 
 import StudentCTA from "../components/CollegePgComponent/CollegeStuCTA.jsx";
@@ -28,8 +28,7 @@ const slugify = (str = "") => str.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 /* ================= COMPONENT ================= */
 
 const CollegePage = () => {
-  const { districtKey, slug, tabName } = useParams();
-  const navigate = useNavigate();
+  const { citySlug, collegeSlug, tabName } = useParams();
 
   const [college, setCollege] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,7 +37,7 @@ const CollegePage = () => {
   /* ================= AUTH ================= */
 
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  const role = localStorage.getItem("role")?.toUpperCase();
 
   const isLoggedIn = !!token;
   const isStudent = role === "STUDENT";
@@ -46,14 +45,14 @@ const CollegePage = () => {
   /* ================= FETCH COLLEGE ================= */
 
   useEffect(() => {
-    if (!districtKey || !slug) return;
+    if (!citySlug || !collegeSlug) return;
 
     const fetchCollege = async () => {
       try {
         setLoading(true);
 
         const res = await axios.get(
-          `http://localhost:5000/api/college/view/${districtKey}/${slug}`,
+          `http://localhost:5000/api/college/view/${citySlug}/${collegeSlug}`,
         );
 
         setCollege(res.data);
@@ -66,7 +65,7 @@ const CollegePage = () => {
     };
 
     fetchCollege();
-  }, [districtKey, slug]);
+  }, [citySlug, collegeSlug]);
 
   /* ================= ACTIVE TAB ================= */
 
@@ -153,8 +152,7 @@ const CollegePage = () => {
         {(!isLoggedIn || role === "STUDENT") && (
           <StudentCTA
             college={college}
-            collegeSlug={slug}
-            districtKey={districtKey}
+            collegeSlug={collegeSlug}
             isLoggedIn={isLoggedIn}
             setShowAuthPopup={setShowAuthPopup}
           />
@@ -178,7 +176,7 @@ const CollegePage = () => {
               return (
                 <li key={t}>
                   <NavLink
-                    to={`/college/${districtKey}/${slug}/${tabSlug}`}
+                    to={`/college/${citySlug}/${collegeSlug}/${tabSlug}`}
                     className={({ isActive }) =>
                       `inline-block pb-3 border-b-2 ${
                         isActive

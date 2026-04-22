@@ -1,56 +1,66 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import api from "../../api/axios";
 
-// Import city college arrays
-import {
-  MehsanaColleges,
-  AhmedabadColleges,
-  GandhinagarColleges,
-  VadodaraColleges,
-  RajkotColleges,
-} from "../../assets/assets.js";
-
-// Summary info for cards
-const cities = [
+const baseCities = [
   {
     slug: "ahmedabad",
     name: "Ahmedabad",
-    colleges: AhmedabadColleges.length,
-    img: "Ahmedabad.png",
-    avgCost: "₹60,000",
+    img: "/Ahmedabad.png",
+    fallbackAvgCost: "\u20b960,000",
   },
   {
     slug: "gandhinagar",
     name: "Gandhinagar",
-    colleges: GandhinagarColleges.length,
-    img: "/Gandhinagar.png", // Fixed typo
-    avgCost: "₹60,000",
+    img: "/Gandhinagar.png",
+    fallbackAvgCost: "\u20b960,000",
   },
   {
     slug: "vadodara",
     name: "Vadodara",
-    colleges: VadodaraColleges.length,
     img: "/Vadodara.png",
-    avgCost: "₹60,000",
+    fallbackAvgCost: "\u20b960,000",
   },
   {
     slug: "rajkot",
     name: "Rajkot",
-    colleges: RajkotColleges.length,
     img: "/Rajkot.png",
-    avgCost: "₹60,000",
+    fallbackAvgCost: "\u20b960,000",
   },
   {
     slug: "mehsana",
     name: "Mehsana",
-    colleges: MehsanaColleges.length,
     img: "/Mehsana.png",
-    avgCost: "₹50,000",
+    fallbackAvgCost: "\u20b950,000",
   },
 ];
 
+const getFeeValues = (college = {}) => {
+  const courseFees = (college?.courses || [])
+    .map((course) => Number(course?.fees))
+    .filter((fee) => Number.isFinite(fee) && fee > 0);
+
+  if (courseFees.length) return courseFees;
+
+  const fallbackFee = Number(
+    String(college?.fees || "").replace(/[^0-9.]/g, ""),
+  );
+
+  return Number.isFinite(fallbackFee) && fallbackFee > 0 ? [fallbackFee] : [];
+};
+
+const formatCurrency = (amount) =>
+  `\u20b9${Math.round(amount).toLocaleString("en-IN")}`;
+
+const initialCities = baseCities.map((city) => ({
+  ...city,
+  colleges: null,
+  avgCost: city.fallbackAvgCost,
+}));
+
 export default function StudyByDistrict() {
   const scrollerRef = useRef(null);
+  const [cities, setCities] = useState(initialCities);
 
   const scroll = (direction = "right") => {
     if (!scrollerRef.current) return;
@@ -60,6 +70,53 @@ export default function StudyByDistrict() {
       behavior: "smooth",
     });
   };
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const fetchCities = async () => {
+      const liveCities = await Promise.all(
+        baseCities.map(async (city) => {
+          try {
+            const res = await api.get(`/college/district/${city.slug}`);
+            const colleges = Array.isArray(res.data) ? res.data : [];
+            const fees = colleges.flatMap(getFeeValues);
+
+            return {
+              ...city,
+              colleges: colleges.length,
+              avgCost: fees.length
+                ? formatCurrency(
+                    fees.reduce((sum, fee) => sum + fee, 0) / fees.length,
+                  )
+                : city.fallbackAvgCost,
+            };
+          } catch (error) {
+            console.error(
+              `StudyByDistrict fetch failed for ${city.slug}:`,
+              error,
+            );
+
+            return {
+              ...city,
+              colleges: 0,
+              avgCost: city.fallbackAvgCost,
+            };
+          }
+        }),
+      );
+
+      if (!isCancelled) {
+        setCities(liveCities);
+      }
+    };
+
+    fetchCities();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
@@ -117,7 +174,7 @@ export default function StudyByDistrict() {
                     {city.name}
                   </h3>
                   <p className="text-sm text-slate-500">
-                    Check {city.colleges} Colleges
+                    Check {city.colleges ?? "..."} Colleges
                   </p>
                 </header>
 
@@ -129,7 +186,7 @@ export default function StudyByDistrict() {
                         No. Of Colleges
                       </div>
                       <div className="text-sm font-medium text-slate-800">
-                        {city.colleges}
+                        {city.colleges ?? "..."}
                       </div>
                     </div>
                     <div className="px-2">
@@ -144,7 +201,7 @@ export default function StudyByDistrict() {
                 </div>
 
                 {/* City Image with overlay */}
-                {/* City Image with transparent text overlay */}
+
                 <div className="relative w-full h-40 rounded-xl overflow-hidden mt-auto">
                   <img
                     src={city.img}

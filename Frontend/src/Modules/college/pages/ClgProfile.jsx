@@ -537,7 +537,6 @@ export default function ClgProfile() {
           authorizedPerson: form.authorizedPerson,
           email: form.email,
           mobile: form.mobile,
-          password: form.password,
         });
 
       if (step === 2)

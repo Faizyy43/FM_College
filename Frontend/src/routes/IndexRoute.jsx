@@ -50,6 +50,8 @@ import RequestsPage from "../admin/pages/requests/RequestsPage";
 import RequestDetailsPage from "../admin/pages/requests/RequestDetailsPage";
 import CollegesPage from "../admin/module/College/CollegesPage";
 import CollegeProfile from "../admin/module/College/CollegeProfile";
+import EstablishmentsPage from "../admin/module/Establishment/EstablishmentsPage";
+import EstablishmentsProfile from "../admin/module/Establishment/EstablishmentsProfile";
 import EsDirectory from "../components/EsPgComponent/EsDirectory.jsx";
 import EstablishmentPage from "../pages/EstablishmentPage.jsx";
 import { EsApplicationForm } from "../components/EsPgComponent/EsApplicationForm.jsx";
@@ -118,9 +120,16 @@ const IndexRoute = () => {
           element={<EstablishmentPage />}
         />
 
+        <Route element={<ProtectedRoute allowedRoles={['STUDENT']} />}>
+          <Route
+            path="/establishment/:districtKey/:slug/apply"
+            element={<EsApplicationForm />}
+          />
+        </Route>
+
         <Route
           path="/establishment/:districtKey/:slug/:tabName"
-          element={<EsApplicationForm />}
+          element={<EstablishmentPage />}
         />
 
         <Route path="/establishments/:districtKey" element={<EsDirectory />} />
@@ -171,13 +180,10 @@ const IndexRoute = () => {
       </Route>
 
       {/* ================= MODULE ROUTES FIX ================= */}
-      {/* 🔥 IMPORTANT FIX HERE */}
-      <Route path="/*">
-        {EstablishmentRoutes()}
-        {CollegeRoutes()}
-        {StudentRoutes()}
-        {AgentRoutes()}
-      </Route>
+      <Route path="/establishment/*" element={<EstablishmentRoutes />} />
+      <Route path="/college/*" element={<CollegeRoutes />} />
+      <Route path="/student/*" element={<StudentRoutes />} />
+      <Route path="/agent/*" element={<AgentRoutes />} />
 
       {/* ================= ADMIN DASHBOARD ================= */}
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
@@ -192,6 +198,12 @@ const IndexRoute = () => {
 
           <Route path="colleges" element={<CollegesPage />} />
           <Route path="colleges/:id" element={<CollegeProfile />} />
+
+          <Route path="establishments" element={<EstablishmentsPage />} />
+          <Route
+            path="establishments/:id"
+            element={<EstablishmentsProfile />}
+          />
 
           <Route path="requests" element={<RequestsPage />} />
           <Route path="requests/:id" element={<RequestDetailsPage />} />

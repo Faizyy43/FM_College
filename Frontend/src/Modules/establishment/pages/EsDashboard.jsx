@@ -121,21 +121,49 @@ import { FiBook, FiUsers, FiClock, FiClipboard } from "react-icons/fi";
 import { FaRupeeSign } from "react-icons/fa";
 import EstablishmentLayout from "../../../layout/EstablishmentLayout";
 
+const defaultStats = {
+  totalCourses: 0,
+  totalStudents: 0,
+  newLeads: 0,
+  revenue: 0,
+  recentAdmissions: [],
+  recentPayments: [],
+  profileCompletion: 0,
+  profileStatus: "draft",
+};
+
 export default function EsDashboard() {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState(defaultStats);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchDashboardStats()
-      .then((res) => setStats(res.data))
-      .catch(() => alert("Dashboard load failed"));
+      .then((res) => {
+        setStats({
+          ...defaultStats,
+          ...(res.data || {}),
+        });
+        setError("");
+      })
+      .catch((err) => {
+        console.error("Establishment dashboard load failed:", err);
+        setError(err.response?.data?.message || "Dashboard load failed");
+        setStats(defaultStats);
+      })
+      .finally(() => setLoading(false));
   }, []);
-
-  if (!stats) return null;
 
   return (
     <EstablishmentLayout>
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
+        {loading && (
+          <p className="text-xs text-gray-400 mt-1">Loading data...</p>
+        )}
+        {error && (
+          <p className="text-xs text-red-500 mt-1">{error}</p>
+        )}
       </div>
 
       {/* ================= TOP STATS ================= */}

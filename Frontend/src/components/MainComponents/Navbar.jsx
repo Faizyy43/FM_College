@@ -149,7 +149,7 @@ const Navbar = ({ setSidebarOpen }) => {
   const dashboardPath =
     role && role !== "student" ? `/${role}/dashboard` : null;
 
-  const accountPath = role === "student" ? `/${role}/profile` : null;
+  const accountPath = role === "student" ? "/student/dashboard" : null;
 
   /* =================================================== */
 

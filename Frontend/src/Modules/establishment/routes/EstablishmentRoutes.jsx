@@ -1,11 +1,10 @@
-import { Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 
 import EsProfile from "../pages/EsProfile";
 import EsProfileView from "../pages/EsProfileView";
 import EsCourses from "../pages/EsCourses";
 import EsStudents from "../pages/EsStudents";
-
 import EsPayment from "../pages/EsPayment";
 import EsPaymentHistory from "../pages/EsPaymentHistory";
 import EsDashboard from "../pages/EsDashboard";
@@ -16,28 +15,24 @@ import EsContact from "../pages/EsContact";
 
 const EstablishmentRoutes = () => {
   return (
-    <Route element={<ProtectedRoute allowedRoles={["ESTABLISHMENT"]} />}>
-      {/* 🔥 FIX: removed "/" from all paths */}
-
-      <Route path="establishment/dashboard" element={<EsDashboard />} />
-      <Route path="establishment/profile" element={<EsProfile />} />
-      <Route path="establishment/viewprofile" element={<EsProfileView />} />
-      <Route path="establishment/courses" element={<EsCourses />} />
-      <Route path="establishment/students" element={<EsStudents />} />
-
-      {/* <Route path="establishment/add-student" element={<AddStudent />} /> */}
-
-      <Route path="establishment/payment" element={<EsPayment />} />
-      <Route
-        path="establishment/payment/history"
-        element={<EsPaymentHistory />}
-      />
-
-      <Route path="establishment/gallery" element={<EsGallery />} />
-      <Route path="establishment/projects" element={<EsProjects />} />
-      <Route path="establishment/about-us" element={<EsAbout />} />
-      <Route path="establishment/contact" element={<EsContact />} />
-    </Route>
+    <Routes>
+      <Route element={<ProtectedRoute allowedRoles={["ESTABLISHMENT"]} />}>
+        <Route path="dashboard" element={<EsDashboard />} />
+        <Route path="profile" element={<EsProfile />} />
+        <Route path="viewprofile" element={<EsProfileView />} />
+        <Route path="courses" element={<EsCourses />} />
+        <Route path="students" element={<EsStudents />} />
+        <Route path="payment" element={<EsPayment />} />
+        <Route
+          path="payment/history"
+          element={<EsPaymentHistory />}
+        />
+        <Route path="gallery" element={<EsGallery />} />
+        <Route path="projects" element={<EsProjects />} />
+        <Route path="about-us" element={<EsAbout />} />
+        <Route path="contact" element={<EsContact />} />
+      </Route>
+    </Routes>
   );
 };
 

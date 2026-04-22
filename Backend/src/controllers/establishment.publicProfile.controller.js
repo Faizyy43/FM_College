@@ -14,6 +14,42 @@ const slugify = (str = "") =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+const normalizeFileUrl = (fileUrl = "") => {
+  if (!fileUrl) return "";
+
+  const normalized = String(fileUrl).replace(/\\/g, "/");
+  return normalized.startsWith("/") ? normalized : `/${normalized}`;
+};
+
+const getDocumentFile = (documents = [], documentType) => {
+  const match = documents.find((doc) => doc.documentType === documentType);
+  return normalizeFileUrl(match?.fileUrl || "");
+};
+
+const getGalleryWithFallback = (establishment, gallery) => {
+  const fallbackLogo = getDocumentFile(
+    establishment?.documents || [],
+    "companyLogo",
+  );
+  const fallbackBanner = fallbackLogo;
+
+  if (gallery) {
+    return {
+      ...gallery,
+      logo: gallery.logo || fallbackLogo,
+      banner: gallery.banner || fallbackBanner,
+    };
+  }
+
+  if (!fallbackLogo && !fallbackBanner) return null;
+
+  return {
+    logo: fallbackLogo,
+    banner: fallbackBanner,
+    images: [],
+  };
+};
+
 /* ======================================================
    GET ESTABLISHMENTS BY DISTRICT
    Used in EstablishmentDirectory.jsx
@@ -52,7 +88,7 @@ export const getEstablishmentsByDistrict = async (req, res) => {
 
     const enriched = establishments.map((est) => ({
       ...est,
-      gallery: galleryMap[est.userId] || null,
+      gallery: getGalleryWithFallback(est, galleryMap[est.userId] || null),
       courses: courseMap[est.userId] || []
     }));
 
@@ -109,7 +145,7 @@ export const getEstablishmentBySlug = async (req, res) => {
 
     res.json({
       ...establishment,
-      gallery,
+      gallery: getGalleryWithFallback(establishment, gallery),
       courses,
       projects,
       about,
@@ -160,7 +196,7 @@ export const getEstablishmentById = async (req, res) => {
 
     res.json({
       ...establishment.toObject(),
-      gallery,
+      gallery: getGalleryWithFallback(establishment.toObject(), gallery),
       courses,
       projects,
       about,

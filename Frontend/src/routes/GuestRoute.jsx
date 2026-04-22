@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 
 const GuestRoute = ({ children }) => {
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  const role = localStorage.getItem("role")?.toUpperCase();
 
   // If logged in → kick out
   if (token) {
