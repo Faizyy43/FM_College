@@ -34,7 +34,7 @@ export default function RequestsPage() {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch(`${API}/api/admin/requests`, {
+          fetch(`${API}/api/requests`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
