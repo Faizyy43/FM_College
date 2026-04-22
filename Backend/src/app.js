@@ -99,7 +99,7 @@ app.use(
 );
 
 // ✅ IMPORTANT (this fixes preflight)
-app.options("*", cors());
+// app.options("*", cors());
 
 /* =========================
    BODY PARSER
