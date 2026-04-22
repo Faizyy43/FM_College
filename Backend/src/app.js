@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import cors from "cors";
 
 /* =========================
    ROUTES - ADMIN PANEL
@@ -61,11 +60,11 @@ import collegeAdmissionRoutes from "./routes/college.admission.routes.js";
 import collegePaymentRoutes from "./routes/college.payment.routes.js";
 import collegeDashboardRoutes from "./routes/college.dashboard.routes.js";
 import collegePartnerRoutes from "./routes/college.partner.routes.js";
-import collegePublicRoutes from "./routes/college.publicProfile.routes.js"
-import collegeAboutRoutes from "./routes/college.about.routes.js"
-import collegeContactRoutes from "./routes/college.contact.routes.js"
-import collegeGalleryRoutes from "./routes/college.gallery.routes.js"
-import collegeStudentApplicationRoutes from "./routes/college.studentApplication.routes.js"
+import collegePublicRoutes from "./routes/college.publicProfile.routes.js";
+import collegeAboutRoutes from "./routes/college.about.routes.js";
+import collegeContactRoutes from "./routes/college.contact.routes.js";
+import collegeGalleryRoutes from "./routes/college.gallery.routes.js";
+import collegeStudentApplicationRoutes from "./routes/college.studentApplication.routes.js";
 /* =========================
    ROUTES - ESTABLISHMENT
 ========================= */
@@ -75,8 +74,8 @@ import establishmentStudentRoutes from "./routes/establishment.students.routes.j
 import establishmentCourseRoutes from "./routes/establishment.courses.routes.js";
 import establishmentPaymentRoutes from "./routes/establishment.payments.routes.js";
 import establishmentDashboardRoutes from "./routes/establishment.dashboard.routes.js";
-import publicEstablishmentRoutes from "./routes/establishement.publicProfile.routes.js"
-import establishmentContactRoutes from "./routes/establishment.contact.routes.js"
+import publicEstablishmentRoutes from "./routes/establishement.publicProfile.routes.js";
+import establishmentContactRoutes from "./routes/establishment.contact.routes.js";
 import establishmentGalleryRoutes from "./routes/establishment.gallery.routes.js";
 import establishmentProjectRoutes from "./routes/establishment.projects.routes.js";
 import establishmentAboutRoutes from "./routes/establishment.about.routes.js";
@@ -90,15 +89,17 @@ const app = express();
    CORS
 ========================= */
 
-
-
 app.use(
   cors({
-    origin: "https://fm-college.vercel.app", // your frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: "https://fm-college.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
+
+// ✅ IMPORTANT (this fixes preflight)
+app.options("*", cors());
 
 /* =========================
    BODY PARSER
@@ -135,7 +136,6 @@ app.use("/api/agents", agentRoutes);
 app.use("/api/admin/students", studentRoutes);
 app.use("/api/colleges", collegeRoutes);
 
-
 /* =========================
    STUDENT MODULE
 ========================= */
@@ -153,7 +153,6 @@ app.use("/api/agent/students", agentStudentsRoutes);
 app.use("/api/agent/applications", agentApplicationsRoutes);
 app.use("/api/agent/partners", agentPartnerRoutes);
 
-
 /* =========================
    COLLEGE MODULE
 ========================= */
@@ -170,7 +169,6 @@ app.use("/api/college", collegePublicRoutes);
 app.use("/api/college", collegeAboutRoutes);
 app.use("/api/college", collegeContactRoutes);
 
-
 /* =========================
    ESTABLISHMENT MODULE
 ========================= */
@@ -182,12 +180,10 @@ app.use("/api/establishment/payments", establishmentPaymentRoutes);
 app.use("/api/establishment/dashboard", establishmentDashboardRoutes);
 app.use("/api/establishment", publicEstablishmentRoutes);
 
-
 app.use("/api/establishment", establishmentContactRoutes);
 app.use("/api/establishment", establishmentAboutRoutes);
 app.use("/api/establishment", establishmentGalleryRoutes);
 app.use("/api/establishment", establishmentProjectRoutes);
-
 
 /* =========================
    STATIC FILES
