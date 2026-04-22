@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import cors from "cors";
 
 /* =========================
    ROUTES - ADMIN PANEL
@@ -89,15 +90,14 @@ const app = express();
    CORS
 ========================= */
 
+
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://10.57.125.79:5174",
-    ],
+    origin: "https://fm-college.vercel.app", // your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
-  }),
+  })
 );
 
 /* =========================
