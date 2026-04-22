@@ -6,13 +6,15 @@ export default function EstablishmentsProfile() {
   const { id } = useParams();
   const [establishment, setEstablishment] = useState(null);
 
+  const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchEstablishment = async () => {
       try {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          `http://localhost:5000/api/admin/establishments/${id}`,
+          `${API}/api/admin/establishments/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

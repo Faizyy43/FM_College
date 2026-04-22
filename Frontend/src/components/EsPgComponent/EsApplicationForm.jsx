@@ -25,13 +25,14 @@ export const EsApplicationForm = () => {
 
   const [errors, setErrors] = useState({});
 
+
   /* ================= FETCH ESTABLISHMENT ================= */
 
   useEffect(() => {
     const fetchEstablishment = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/establishment/view/${districtKey}/${slug}`
+          `${API}/api/establishment/view/${districtKey}/${slug}`
         );
 
         setEstablishment(res.data);
@@ -148,7 +149,7 @@ export const EsApplicationForm = () => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "http://localhost:5000/api/establishment/students",
+        `${API}/api/establishment/students`,
         finalData,
         {
           headers: {
@@ -199,6 +200,9 @@ export const EsApplicationForm = () => {
   }
 
   const courses = establishment?.courses || [];
+
+  const API = import.meta.env.VITE_API_URL;
+
 
   const selectedCourse =
     formData.courseIndex !== ""

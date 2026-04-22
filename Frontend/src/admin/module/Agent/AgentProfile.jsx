@@ -6,6 +6,8 @@ export default function AgentProfile() {
   const { id } = useParams();
   const [agent, setAgent] = useState(null);
 
+  const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchAgent = async () => {
       try {
@@ -16,7 +18,7 @@ export default function AgentProfile() {
           return;
         }
 
-        const res = await axios.get(`http://localhost:5000/api/agents/${id}`, {
+        const res = await axios.get(`${API}/api/agents/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

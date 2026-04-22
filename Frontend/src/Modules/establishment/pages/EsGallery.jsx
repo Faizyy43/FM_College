@@ -7,7 +7,9 @@ import {
   deleteGalleryImage,
 } from "../services/esGallery.api";
 
-const BASE_URL = "http://localhost:5000";
+
+  const API = import.meta.env.VITE_API_URL;
+
 
 export default function EsGallery() {
   const [gallery, setGallery] = useState(null);
@@ -189,7 +191,7 @@ const GalleryCard = ({ title, image, onAdd }) => (
 
     {image ? (
       <img
-        src={`http://localhost:5000${image}`}
+        src={`${API}${image}`}
         className="h-48 w-full object-cover rounded-xl mb-4"
       />
     ) : (
@@ -208,7 +210,7 @@ const GalleryItem = ({ img, onPreview, onDelete }) => (
 
     <div className="aspect-square">
       <img
-        src={`http://localhost:5000${img}`}
+        src={`${API}${img}`}
         className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
       />
     </div>

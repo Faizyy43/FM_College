@@ -7,11 +7,13 @@ export default function AdminLayout() {
   const [open, setOpen] = useState(false);
   const [requests, setRequests] = useState([]);
 
+  const API = import.meta.env.VITE_API_URL;
+
   const fetchRequests = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/api/requests", {
+      const res = await fetch(`${API}/api/requests`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

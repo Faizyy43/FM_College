@@ -47,6 +47,9 @@ const EstablishmentPage = () => {
   const isLoggedIn = !!token;
   const isStudent = role === "STUDENT";
 
+  const API = import.meta.env.VITE_API_URL;
+
+
   /* ================= FETCH ESTABLISHMENT ================= */
 
   useEffect(() => {
@@ -57,7 +60,7 @@ const EstablishmentPage = () => {
         setLoading(true);
 
         const res = await axios.get(
-          `http://localhost:5000/api/establishment/view/${districtKey}/${slug}`,
+          `${API}/api/establishment/view/${districtKey}/${slug}`,
         );
 
         setEstablishment(res.data);
@@ -106,7 +109,7 @@ const EstablishmentPage = () => {
       <EsBanner
         image={
           establishment.gallery?.banner
-            ? `http://localhost:5000${establishment.gallery.banner}`
+            ? `${API}${establishment.gallery.banner}`
             : null
         }
         name={establishment.establishmentName}
@@ -119,7 +122,7 @@ const EstablishmentPage = () => {
           <div className="flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left">
             {establishment?.gallery?.logo && (
               <img
-                src={`http://localhost:5000${establishment.gallery.logo}`}
+                src={`${API}${establishment.gallery.logo}`}
                 alt="logo"
                 className="w-24 h-24 sm:w-28 sm:h-28 object-contain rounded-xl shadow-md"
               />

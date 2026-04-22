@@ -14,6 +14,9 @@ const slugify = (str = "") =>
 const capitalize = (str = "") =>
   str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
+  const API = import.meta.env.VITE_API_URL;
+
+
 export default function EsDirectory() {
   const { districtKey } = useParams();
 
@@ -26,7 +29,7 @@ export default function EsDirectory() {
         setLoading(true);
 
         const res = await axios.get(
-          `http://localhost:5000/api/establishment/district/${districtKey}`,
+          `${API}/api/establishment/district/${districtKey}`,
         );
 
         setEstablishments(res.data || []);
@@ -39,6 +42,9 @@ export default function EsDirectory() {
 
     if (districtKey) fetchEstablishments();
   }, [districtKey]);
+
+  const API = import.meta.env.VITE_API_URL;
+
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -102,7 +108,7 @@ export default function EsDirectory() {
                     {establishment?.gallery?.logo && (
                       <div className="shrink-0 flex items-start">
                         <img
-                          src={`http://localhost:5000${establishment.gallery.logo}`}
+                          src={`${API}${establishment.gallery.logo}`}
                           alt="logo"
                           className="h-28 w-28 object-contain bg-slate-50 p-2 rounded"
                         />

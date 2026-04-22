@@ -7,12 +7,14 @@ export default function EstablishmentsPage() {
   const [establishments, setEstablishments] = useState([]);
   const navigate = useNavigate();
 
+  const API = import.meta.env.VITE_API_URL;
+
   const fetchEstablishments = async () => {
     try {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://localhost:5000/api/admin/establishment-applications",
+        `${API}/api/admin/establishment-applications`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,7 +58,7 @@ export default function EstablishmentsPage() {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `http://localhost:5000/api/admin/establishments/${id}`,
+        `${API}/api/admin/establishments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -75,7 +77,7 @@ export default function EstablishmentsPage() {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        `http://localhost:5000/api/admin/establishment/create-account/${id}`,
+        `${API}/api/admin/establishment/create-account/${id}`,
         {},
         {
           headers: {

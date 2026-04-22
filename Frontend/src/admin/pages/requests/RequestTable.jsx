@@ -19,6 +19,8 @@ export default function RequestTable({ data = [] }) {
       REJECTED: "bg-red-100 text-red-700 border border-red-200",
     };
 
+    const API = import.meta.env.VITE_API_URL;
+
     return (
       <span
         className={`px-3 py-1 text-xs font-semibold rounded-full ${
@@ -37,11 +39,11 @@ export default function RequestTable({ data = [] }) {
       const role = (req.role || "").toUpperCase();
 
       if (role === "COLLEGE") {
-        url = `http://localhost:5000/api/admin/colleges/verify/${req._id}`;
+        url = `${API}/api/admin/colleges/verify/${req._id}`;
       }
 
       if (role === "ESTABLISHMENT") {
-        url = `http://localhost:5000/api/admin/establishment/verify/${req._id}`;
+        url = `${API}/api/admin/establishment/verify/${req._id}`;
       }
 
       if (!url) {

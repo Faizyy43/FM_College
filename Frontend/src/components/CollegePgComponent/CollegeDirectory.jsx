@@ -83,6 +83,8 @@ const districts = [
   "vav-tharad",
 ];
 
+const API = import.meta.env.VITE_API_URL;
+
 const CollegeDirectory = () => {
   const { citySlug } = useParams();
   const cityName = citySlug ? citySlug.replace(/-/g, " ") : "";
@@ -101,7 +103,7 @@ const CollegeDirectory = () => {
 
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/college/district/${citySlug}`,
+          `${API}/api/college/district/${citySlug}`,
         );
         setColleges(res.data || []);
       } catch (err) {
@@ -180,7 +182,7 @@ const CollegeDirectory = () => {
                 college.collegeName || college.name || "College";
               const slug = slugify(collegeName);
               const logoUrl = college?.gallery?.logo
-                ? `http://localhost:5000${college.gallery.logo}`
+                ? `${API}${college.gallery.logo}`
                 : college?.logo || "";
               const addressText = buildAddressText(college);
               const courseNames = getCourseNames(college);

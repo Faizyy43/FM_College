@@ -14,6 +14,9 @@ const EsProjectsTab = ({ projects }) => {
     );
   }
 
+  const API = import.meta.env.VITE_API_URL;
+
+
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "completed":
@@ -42,7 +45,7 @@ const EsProjectsTab = ({ projects }) => {
             {project.image && (
               <div className="md:w-1/2 h-60 md:h-auto">
                 <img
-                  src={`http://localhost:5000${project.image}`}
+                  src={`${API}${project.image}`}
                   alt={project.title}
                   className="w-full h-full object-cover"
                 />

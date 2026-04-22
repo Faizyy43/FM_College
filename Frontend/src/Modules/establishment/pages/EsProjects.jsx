@@ -8,7 +8,9 @@ import {
   deleteProject,
 } from "../services/esProjects.api";
 
-const BASE_URL = "http://localhost:5000";
+
+  const API = import.meta.env.VITE_API_URL;
+
 
 const initialForm = {
   title: "",
@@ -155,7 +157,7 @@ export default function EsProjects() {
 
                 {proj.image && (
                   <img
-                    src={`${BASE_URL}${proj.image}`}
+                    src={`${API}${proj.image}`}
                     className="h-40 w-full object-cover rounded-xl mb-4"
                     alt=""
                   />

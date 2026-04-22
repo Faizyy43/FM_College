@@ -137,6 +137,9 @@ export default function ClgAbout() {
 
   };
 
+  const API = import.meta.env.VITE_API_URL;
+
+
   /* ================= LOADING ================= */
 
   if (loading) {
@@ -261,7 +264,7 @@ export default function ClgAbout() {
 
                 {sec.image && (
                   <img
-                    src={`http://localhost:5000/${sec.image.path}`}
+                    src={`${API}/${sec.image.path}`}
                     className="h-40 w-full object-cover"
                   />
                 )}

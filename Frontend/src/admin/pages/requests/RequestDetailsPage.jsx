@@ -10,10 +10,12 @@ export default function RequestDetailsPage() {
   const [processing, setProcessing] = useState(false);
   const [actionType, setActionType] = useState(null);
 
+  const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchRequest = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/requests/${id}`);
+        const res = await fetch(`${API}/api/requests/${id}`);
         const data = await res.json();
         setRequest(data);
       } catch (error) {
@@ -30,7 +32,7 @@ export default function RequestDetailsPage() {
     try {
       setProcessing(true);
 
-      await fetch(`http://localhost:5000/api/requests/${id}/${type}`, {
+      await fetch(`${API}/api/requests/${id}/${type}`, {
         method: "PUT",
       });
 
@@ -45,7 +47,7 @@ export default function RequestDetailsPage() {
 
   const handleApprove = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/requests/${id}/approve`);
+      await axios.put(`${API}/api/requests/${id}/approve`);
       alert("Request Approved");
       navigate("/admin/requests");
     } catch (error) {
@@ -63,7 +65,7 @@ export default function RequestDetailsPage() {
       }
 
       await axios.patch(
-        `http://localhost:5000/api/admin/requests/reject/${id}`,
+        `${API}/api/admin/requests/reject/${id}`,
         {},
         {
           headers: {

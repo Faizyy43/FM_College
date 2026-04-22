@@ -10,6 +10,8 @@ const ClgAboutTab = ({ about }) => {
   const info = about.filter((item) => item.type === "INFO");
   const cards = about.filter((item) => item.type === "CARD");
 
+  const API = import.meta.env.VITE_API_URL;
+
   return (
     <div className="py-16 px-6 bg-gradient-to-b from-gray-50 to-white">
 
@@ -62,7 +64,7 @@ const ClgAboutTab = ({ about }) => {
                       <div className="h-full overflow-hidden rounded-xl shadow-md">
 
                         <img
-                          src={`http://localhost:5000/${item.image.path}`}
+                          src={`${API}/${item.image.path}`}
                           alt={item.title}
                           className="w-full h-[300px] md:h-full object-cover hover:scale-105 transition duration-500"
                         />

@@ -6,13 +6,15 @@ export default function CollegeProfile() {
   const { id } = useParams();
   const [college, setCollege] = useState(null);
 
+  const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchCollege = async () => {
       try {
         const token = localStorage.getItem("token"); // get token
 
         const res = await axios.get(
-          `http://localhost:5000/api/admin/colleges/${id}`,
+          `${API}/api/admin/colleges/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

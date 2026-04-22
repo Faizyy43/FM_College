@@ -7,6 +7,8 @@ export default function AgentsPage() {
   const [agents, setAgents] = useState([]);
   const navigate = useNavigate();
 
+  const API = import.meta.env.VITE_API_URL;
+
   const fetchAgents = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -16,7 +18,7 @@ export default function AgentsPage() {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/agents", {
+      const res = await axios.get(`${API}/api/agents`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -59,7 +61,7 @@ export default function AgentsPage() {
         return;
       }
 
-      await axios.delete(`http://localhost:5000/api/agents/${id}`, {
+      await axios.delete(`${API}/api/agents/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

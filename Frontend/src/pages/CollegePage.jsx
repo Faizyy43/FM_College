@@ -42,6 +42,9 @@ const CollegePage = () => {
   const isLoggedIn = !!token;
   const isStudent = role === "STUDENT";
 
+  const API = import.meta.env.VITE_API_URL;
+
+
   /* ================= FETCH COLLEGE ================= */
 
   useEffect(() => {
@@ -52,7 +55,7 @@ const CollegePage = () => {
         setLoading(true);
 
         const res = await axios.get(
-          `http://localhost:5000/api/college/view/${citySlug}/${collegeSlug}`,
+          `${API}/api/college/view/${citySlug}/${collegeSlug}`,
         );
 
         setCollege(res.data);
@@ -96,6 +99,9 @@ const CollegePage = () => {
     );
   }
 
+  const API = import.meta.env.VITE_API_URL;
+
+
   /* ================= UI ================= */
 
   return (
@@ -108,7 +114,7 @@ const CollegePage = () => {
             <img
               src={
                 college?.gallery?.banner
-                  ? `http://localhost:5000${college.gallery.banner}`
+                  ? `${API}${college.gallery.banner}`
                   : ""
               }
               alt={college.collegeName}
@@ -128,7 +134,7 @@ const CollegePage = () => {
             {college?.gallery?.logo && (
               <div className="w-24 h-24 bg-white rounded-xl shadow flex items-center justify-center border">
                 <img
-                  src={`http://localhost:5000${college.gallery.logo}`}
+                  src={`${API}${college.gallery.logo}`}
                   alt="logo"
                   className="w-20 h-20 object-contain"
                 />

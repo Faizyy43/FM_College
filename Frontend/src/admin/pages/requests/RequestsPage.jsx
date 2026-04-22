@@ -11,6 +11,8 @@ export default function RequestsPage() {
   const globalRequests = outletContext.requests || [];
   const refreshRequests = outletContext.fetchRequests;
 
+  const API = import.meta.env.VITE_API_URL;
+
   const fetchRequests = async () => {
     try {
       if (refreshRequests) {
@@ -22,17 +24,17 @@ export default function RequestsPage() {
         const token = localStorage.getItem("token");
 
         const [collegeRes, establishmentRes, requestRes] = await Promise.all([
-          fetch("http://localhost:5000/api/admin/colleges/pending", {
+          fetch(`${API}/api/admin/colleges/pending`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("http://localhost:5000/api/admin/establishments/pending", {
+          fetch(`${API}/api/admin/establishments/pending`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("http://localhost:5000/api/admin/requests", {
+          fetch(`${API}/api/admin/requests`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

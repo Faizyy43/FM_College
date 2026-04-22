@@ -18,6 +18,9 @@ const EsGalleryTab = ({ gallery }) => {
     );
   }
 
+  const API = import.meta.env.VITE_API_URL;
+
+
   return (
     <>
       {/* GALLERY SECTION */}
@@ -33,13 +36,13 @@ const EsGalleryTab = ({ gallery }) => {
               <div
                 key={index}
                 onClick={() =>
-                  setSelectedImage(`http://localhost:5000${img}`)
+                  setSelectedImage(`${API}${img}`)
                 }
                 className="cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden"
               >
 
                 <img
-                  src={`http://localhost:5000${img}`}
+                  src={`${API}${img}`}
                   alt="gallery"
                   className="w-full h-52 object-cover hover:scale-110 transition duration-300"
                 />

@@ -7,11 +7,13 @@ export default function CollegesPage() {
   const [colleges, setColleges] = useState([]);
   const navigate = useNavigate();
 
+  const API = import.meta.env.VITE_API_URL;
+
   const fetchColleges = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await axios.get("http://localhost:5000/api/admin/colleges", {
+      const res = await axios.get(`${API}/api/admin/colleges`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,7 +62,7 @@ export default function CollegesPage() {
     try {
       const token = localStorage.getItem("token");
 
-      await axios.delete(`http://localhost:5000/api/admin/colleges/${id}`, {
+      await axios.delete(`${API}/api/admin/colleges/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -77,7 +79,7 @@ export default function CollegesPage() {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        `http://localhost:5000/api/admin/colleges/create-account/${id}`,
+        `${API}/api/admin/colleges/create-account/${id}`,
         {},
         {
           headers: {
